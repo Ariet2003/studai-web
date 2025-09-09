@@ -86,12 +86,12 @@ const universities = [
 ];
 
 // Компонент бегущей строки университетов
-function UniversityTicker() {
+function UniversityTicker({ isDarkMode }: { isDarkMode: boolean }) {
   return (
     <div className="relative mb-6 h-12 overflow-hidden">
       {/* Градиенты для плавного исчезновения по краям */}
-      <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-purple-50 to-transparent z-10 pointer-events-none"></div>
-      <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-blue-50 to-transparent z-10 pointer-events-none"></div>
+      <div className={`absolute left-0 top-0 w-32 h-full bg-gradient-to-r z-10 pointer-events-none ${isDarkMode ? 'from-[#050c26] to-transparent opacity-80' : 'from-purple-50 to-transparent'}`}></div>
+      <div className={`absolute right-0 top-0 w-32 h-full bg-gradient-to-l z-10 pointer-events-none ${isDarkMode ? 'from-[#050c26] to-transparent opacity-80' : 'from-blue-50 to-transparent'}`}></div>
       
       {/* Бегущая строка */}
       <div className="flex items-center h-full">
@@ -121,7 +121,7 @@ function UniversityTicker() {
 }
 
 // Компонент анимированных отзывов
-function TestimonialAnimatedContainer() {
+function TestimonialAnimatedContainer({ isDarkMode }: { isDarkMode: boolean }) {
   const [activeCards, setActiveCards] = useState([
     { container: 0, showFirst: true },
     { container: 1, showFirst: true },
@@ -151,7 +151,7 @@ function TestimonialAnimatedContainer() {
   return (
     <div className="relative w-full">
       {/* Бегущая строка с университетами */}
-      <UniversityTicker />
+      <UniversityTicker isDarkMode={isDarkMode} />
 
       {/* Карточки отзывов */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -160,6 +160,7 @@ function TestimonialAnimatedContainer() {
             key={containerIndex}
             containerIndex={containerIndex}
             showFirst={activeCards[containerIndex].showFirst}
+            isDarkMode={isDarkMode}
           />
         ))}
       </div>
@@ -170,10 +171,12 @@ function TestimonialAnimatedContainer() {
 // Компонент контейнера с отзывами (как в оригинале)
 function TestimonialContainer({ 
   containerIndex, 
-  showFirst
+  showFirst,
+  isDarkMode
 }: {
   containerIndex: number;
   showFirst: boolean;
+  isDarkMode: boolean;
 }) {
   // Определяем индексы отзывов для каждого контейнера
   const getTestimonialIndices = (containerIndex: number) => {
@@ -196,33 +199,37 @@ function TestimonialContainer({
     >
       {/* Первая карточка */}
       <div
-        className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/40"
+        className={`absolute inset-0 backdrop-blur-sm rounded-2xl p-6 shadow-lg border transition-colors ${
+          isDarkMode ? 'bg-[#181f38]/90 border-[#181f38]/40' : 'bg-white/90 border-white/40'
+        }`}
         style={{
           transition: 'opacity 1500ms cubic-bezier(1, 0, 0.615, 0.995), transform 1500ms cubic-bezier(1, 0, 0.615, 0.995)',
           opacity: showFirst ? 1 : 0,
           transform: showFirst ? 'translateY(0px)' : 'translateY(110%)'
         }}
       >
-        <TestimonialCard testimonial={testimonials[first]} />
+        <TestimonialCard testimonial={testimonials[first]} isDarkMode={isDarkMode} />
       </div>
 
       {/* Вторая карточка */}
       <div
-        className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/40"
+        className={`absolute inset-0 backdrop-blur-sm rounded-2xl p-6 shadow-lg border transition-colors ${
+          isDarkMode ? 'bg-[#181f38]/90 border-[#181f38]/40' : 'bg-white/90 border-white/40'
+        }`}
         style={{
           transition: 'opacity 1500ms cubic-bezier(1, 0, 0.615, 0.995), transform 1500ms cubic-bezier(1, 0, 0.615, 0.995)',
           opacity: showFirst ? 0 : 1,
           transform: showFirst ? 'translateY(110%)' : 'translateY(0px)'
         }}
       >
-        <TestimonialCard testimonial={testimonials[second]} />
+        <TestimonialCard testimonial={testimonials[second]} isDarkMode={isDarkMode} />
       </div>
     </motion.div>
   );
 }
 
 // Компонент карточки отзыва
-function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] }) {
+function TestimonialCard({ testimonial, isDarkMode }: { testimonial: typeof testimonials[0]; isDarkMode: boolean }) {
   return (
     <div className="space-y-4">
       {/* Звезды */}
@@ -233,7 +240,7 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
       </div>
       
       {/* Текст отзыва */}
-      <p className="text-gray-700 text-sm leading-relaxed">
+      <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
         "{testimonial.review}"
       </p>
       
@@ -246,10 +253,10 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
         />
         <div className="flex-1">
           <div className="flex items-center space-x-2">
-            <h4 className="font-semibold text-gray-900 text-sm">{testimonial.name}</h4>
+            <h4 className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{testimonial.name}</h4>
             <CheckCircle className="w-4 h-4 text-green-500" />
           </div>
-          <p className="text-gray-600 text-xs">{testimonial.university}</p>
+          <p className={`text-xs ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>{testimonial.university}</p>
         </div>
       </div>
     </div>
@@ -301,7 +308,7 @@ const faqData = [
 ];
 
 // Компонент FAQ аккордеона
-function FAQAccordion() {
+function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
   const [openItems, setOpenItems] = useState<number[]>([1]); // Первый элемент открыт по умолчанию
 
   const toggleItem = (id: number) => {
@@ -319,8 +326,14 @@ function FAQAccordion() {
   const renderFAQItem = (item: typeof faqData[0], delay: number) => (
     <motion.div
       key={item.id}
-      className={`rounded-xl p-6 backdrop-blur-sm shadow-lg border border-white/40 mb-4 cursor-pointer transition-all duration-300 ${
-        openItems.includes(item.id) ? 'bg-white/80' : 'bg-white/60 hover:bg-white/70'
+      className={`rounded-xl p-6 backdrop-blur-sm shadow-lg border mb-4 cursor-pointer transition-all duration-300 ${
+        isDarkMode
+          ? openItems.includes(item.id)
+            ? 'bg-[#181f38]/80 border-[#181f38]/40'
+            : 'bg-[#181f38]/60 hover:bg-[#181f38]/70 border-[#181f38]/40'
+          : openItems.includes(item.id)
+            ? 'bg-white/80 border-white/40'
+            : 'bg-white/60 hover:bg-white/70 border-white/40'
       }`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -330,16 +343,16 @@ function FAQAccordion() {
     >
       <button className="w-full text-left">
         <div className="flex items-center justify-between gap-x-3 pb-3">
-          <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors">
+          <h3 className={`text-lg font-semibold transition-colors ${isDarkMode ? 'text-white hover:text-blue-400' : 'text-gray-800 hover:text-blue-600'}`}>
             {item.question}
           </h3>
           <div className="flex-shrink-0">
             {openItems.includes(item.id) ? (
-              <svg className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className={`w-5 h-5 transition-colors ${isDarkMode ? 'text-[#78819d] hover:text-blue-400' : 'text-gray-600 hover:text-blue-500'}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m18 15-6-6-6 6"/>
               </svg>
             ) : (
-              <svg className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className={`w-5 h-5 transition-colors ${isDarkMode ? 'text-[#78819d] hover:text-blue-400' : 'text-gray-600 hover:text-blue-500'}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m6 9 6 6 6-6"/>
               </svg>
             )}
@@ -356,7 +369,7 @@ function FAQAccordion() {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="overflow-hidden"
       >
-        <p className="text-gray-700 leading-relaxed">
+        <p className={`leading-relaxed ${isDarkMode ? 'text-[#78819d]' : 'text-gray-700'}`}>
           {item.answer}
         </p>
       </motion.div>
@@ -379,11 +392,55 @@ function FAQAccordion() {
 }
 
 export default function Home() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Theme toggle component
+  const ThemeToggle = () => (
+    <div className="switchWrapper--1eo4">
+      <div 
+        className={`pointer icon--2r1-plus -mr-4 ${isDarkMode ? 'isActive--ihJ-' : ''}`}
+        onClick={() => setIsDarkMode(true)}
+      >
+        <div className="wrapper wrapper__svg-is-inherit" style={{width:'24px',height:'24px'}} data-v-411017c9="">
+          <svg data-v-411017c9="" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
+            <path data-v-411017c9="" d="M12.708 5.16673C12.836 4.91868 12.8254 4.62187 12.6801 4.38356C12.5348 4.14525 12.2758 3.99989 11.9967 4C7.57994 4.00179 4 7.58282 4 12C4 16.4183 7.58172 20 12 20C15.0997 20 17.7862 18.237 19.114 15.6627C19.2419 15.4147 19.2313 15.118 19.0861 14.8797C18.9409 14.6414 18.682 14.496 18.403 14.496L18.4 14.496C14.8654 14.496 12 11.6306 12 8.096C12 7.03876 12.2557 6.04358 12.708 5.16673Z" fill="currentColor"></path>
+          </svg>
+        </div>
+      </div>
+      <div 
+        className={`pointer icon--2r1-plus ${!isDarkMode ? 'isActive--ihJ-' : ''}`}
+        onClick={() => setIsDarkMode(false)}
+      >
+        <div className="wrapper wrapper__svg-is-inherit" style={{width:'24px',height:'24px'}} data-v-411017c9="">
+          <svg data-v-411017c9="" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
+            <path data-v-411017c9="" d="M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M11 3C11 2.44772 11.4477 2 12 2C12.5523 2 13 2.44772 13 3V4C13 4.55228 12.5523 5 12 5C11.4477 5 11 4.55228 11 4V3Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M5.636 7.05086C6.02653 7.44138 6.65969 7.44138 7.05022 7.05086C7.44074 6.66033 7.44074 6.02717 7.05022 5.63664L6.34311 4.92954C5.95259 4.53901 5.31942 4.53901 4.9289 4.92954C4.53837 5.32006 4.53837 5.95323 4.9289 6.34375L5.636 7.05086Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M19.0711 4.92976C18.6806 4.53924 18.0474 4.53924 17.6569 4.92976L16.9498 5.63687C16.5593 6.02739 16.5593 6.66056 16.9498 7.05108C17.3403 7.44161 17.9735 7.44161 18.364 7.05108L19.0711 6.34398C19.4616 5.95345 19.4616 5.32029 19.0711 4.92976Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M7.05037 16.9493C6.65984 16.5588 6.02668 16.5588 5.63615 16.9493L4.92905 17.6564C4.53852 18.0469 4.53852 18.6801 4.92905 19.0706C5.31957 19.4611 5.95274 19.4611 6.34326 19.0706L7.05037 18.3635C7.44089 17.973 7.44089 17.3398 7.05037 16.9493Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M19.071 19.0704C18.6804 19.4609 18.0473 19.4609 17.6568 19.0704L16.9496 18.3633C16.5591 17.9728 16.5591 17.3396 16.9496 16.9491C17.3402 16.5585 17.9733 16.5585 18.3639 16.9491L19.071 17.6562C19.4615 18.0467 19.4615 18.6799 19.071 19.0704Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M12 19C11.4477 19 11 19.4477 11 20V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V20C13 19.4477 12.5523 19 12 19Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M21 11C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13H20C19.4477 13 19 12.5523 19 12C19 11.4477 19.4477 11 20 11H21Z" fill="currentColor"></path>
+            <path data-v-411017c9="" d="M5 12C5 11.4477 4.55228 11 4 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4C4.55228 13 5 12.5523 5 12Z" fill="currentColor"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50 relative overflow-hidden">
+    <div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-[#050c26]' 
+        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50'
+    }`}>
       
       {/* Header */}
-      <header className="fixed top-4 left-4 right-4 bg-white/80 backdrop-blur-xl border border-white/40 z-50 rounded-3xl shadow-lg">
+      <header className={`fixed top-4 left-4 right-4 backdrop-blur-xl border z-50 rounded-3xl shadow-lg transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-[#181f38]/80 border-[#181f38]/40' 
+          : 'bg-white/80 border-white/40'
+      }`}>
         <motion.div 
           className="px-8 py-4 flex items-center justify-between"
           initial={{ opacity: 0, y: -20 }}
@@ -395,7 +452,7 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
           >
             <img 
-              src="/studai-logo.svg" 
+              src={isDarkMode ? "/studai-logo-white.svg" : "/studai-logo.svg"} 
               alt="StudAI Logo" 
               className="w-10 h-10 relative -top-0.75"
               onError={(e) => {
@@ -410,29 +467,54 @@ export default function Home() {
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-blue-600">StudAI</span>
+            <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-blue-600'}`}>StudAI</span>
           </motion.div>
           
           <nav className="hidden md:flex space-x-8">
-            <a href="#services" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a href="#services" className={`transition-colors font-medium ${
+              isDarkMode 
+                ? 'text-[#78819d] hover:text-white' 
+                : 'text-gray-700 hover:text-blue-600'
+            }`}>
               Услуги
             </a>
-            <a href="#process" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a href="#process" className={`transition-colors font-medium ${
+              isDarkMode 
+                ? 'text-[#78819d] hover:text-white' 
+                : 'text-gray-700 hover:text-blue-600'
+            }`}>
               Как работает
             </a>
-            <a href="#benefits" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a href="#benefits" className={`transition-colors font-medium ${
+              isDarkMode 
+                ? 'text-[#78819d] hover:text-white' 
+                : 'text-gray-700 hover:text-blue-600'
+            }`}>
               Преимущества
             </a>
-            <a href="#reviews" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a href="#reviews" className={`transition-colors font-medium ${
+              isDarkMode 
+                ? 'text-[#78819d] hover:text-white' 
+                : 'text-gray-700 hover:text-blue-600'
+            }`}>
               Отзывы
             </a>
-            <a href="#faq" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a href="#faq" className={`transition-colors font-medium ${
+              isDarkMode 
+                ? 'text-[#78819d] hover:text-white' 
+                : 'text-gray-700 hover:text-blue-600'
+            }`}>
               FAQ
             </a>
           </nav>
           
           <div className="flex items-center space-x-6">
-            <a href="#" className="text-black font-bold hover:text-blue-600 transition-colors">
+            <ThemeToggle />
+            <a href="#" className={`font-bold transition-colors ${
+              isDarkMode 
+                ? 'text-white hover:text-blue-600' 
+                : 'text-black hover:text-blue-600'
+            }`}>
               Войти
             </a>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -455,39 +537,45 @@ export default function Home() {
           >
             {/* Badge */}
             <motion.div 
-              className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm border border-white/40 rounded-full px-4 py-2 mb-8 shadow-sm"
+              className={`inline-flex items-center gap-2 backdrop-blur-sm border rounded-full px-4 py-2 mb-8 shadow-sm transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'bg-[#181f38]/60 border-[#181f38]/40' 
+                  : 'bg-white/60 border-white/40'
+              }`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-gray-700 text-sm font-medium">Лучший ИИ-помощник</span>
+              <span className={`text-sm font-medium transition-colors duration-300 ${
+                isDarkMode ? 'text-[#78819d]' : 'text-gray-700'
+              }`}>Лучший ИИ-помощник</span>
             </motion.div>
 
             {/* Background cards - behind text */}
             <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
               {/* Left cards */}
               <motion.div 
-                className="absolute left-10 top-2 bg-white/40 backdrop-blur-lg rounded-xl p-3 shadow-lg border border-white/20 w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px]"
+                className={`absolute left-10 top-2 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
+                  isDarkMode 
+                    ? 'bg-[#181f38]/40 border-[#181f38]/20' 
+                    : 'bg-white/40 border-white/20'
+                }`}
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 1.0 }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  rotate: 2,
-                  y: -5,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  transition: { duration: 0.2 }
-                }}
               >
                 <div className="flex items-start gap-2">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center flex-shrink-0">
                     <FileText className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-gray-900 text-xs mb-1 text-left">Реферат по истории</h4>
-                    <p className="text-gray-600 text-xs mb-1 line-clamp-1 text-left">"Великая Отечественная война"</p>
+                    <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>Реферат по истории</h4>
+                    <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                    }`}>"Великая Отечественная война"</p>
                     <div className="flex items-center justify-between">
                       <span className="text-blue-500 font-bold text-xs">700 руб.</span>
                       <span className="text-gray-500 text-xs">3.2 мин</span>
@@ -497,26 +585,26 @@ export default function Home() {
               </motion.div>
 
               <motion.div 
-                className="absolute left-25 bottom-40 bg-white/40 backdrop-blur-lg rounded-xl p-3 shadow-lg border border-white/20 w-64 cursor-pointer pointer-events-auto hover:z-20 z-10 opacity-60 blur-[1.4px]"
+                className={`absolute left-25 bottom-40 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-20 z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
+                  isDarkMode 
+                    ? 'bg-[#181f38]/40 border-[#181f38]/20' 
+                    : 'bg-white/40 border-white/20'
+                }`}
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  rotate: -1,
-                  y: -5,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  transition: { duration: 0.2 }
-                }}
               >
                 <div className="flex items-start gap-2 pointer-events-none">
                   <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-400 rounded-lg flex items-center justify-center flex-shrink-0">
                     <BookOpen className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-gray-900 text-xs mb-1 text-left">Курсовая работа</h4>
-                    <p className="text-gray-600 text-xs mb-1 line-clamp-1 text-left">"Анализ рынка IT-услуг"</p>
+                    <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>Курсовая работа</h4>
+                    <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                    }`}>"Анализ рынка IT-услуг"</p>
                     <div className="flex items-center justify-between">
                       <span className="text-purple-500 font-bold text-xs">1800 руб.</span>
                       <span className="text-gray-500 text-xs ">2.1 мин</span>
@@ -527,26 +615,26 @@ export default function Home() {
 
               {/* Right cards */}
               <motion.div 
-                className="absolute right-10 top-8 bg-white/40 backdrop-blur-lg rounded-xl p-3 shadow-lg border border-white/20 w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px]"
+                className={`absolute right-10 top-8 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
+                  isDarkMode 
+                    ? 'bg-[#181f38]/40 border-[#181f38]/20' 
+                    : 'bg-white/40 border-white/20'
+                }`}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 1.1 }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  rotate: -2,
-                  y: -5,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  transition: { duration: 0.2 }
-                }}
               >
                 <div className="flex items-start gap-2">
                   <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-400 rounded-lg flex items-center justify-center flex-shrink-0">
                     <GraduationCap className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-gray-900 text-xs mb-1 text-left">СРС по физике</h4>
-                    <p className="text-gray-600 text-xs mb-1 line-clamp-1 text-left">"Квантовая механика"</p>
+                    <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>СРС по физике</h4>
+                    <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                    }`}>"Квантовая механика"</p>
                     <div className="flex items-center justify-between">
                       <span className="text-green-600 font-bold text-xs">450 руб.</span>
                       <span className="text-gray-500 text-xs">2.7 мин</span>
@@ -556,26 +644,26 @@ export default function Home() {
               </motion.div>
 
               <motion.div 
-                className="absolute right-25 bottom-35 bg-white/40 backdrop-blur-lg rounded-xl p-3 shadow-lg border border-white/20 w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px]"
+                className={`absolute right-25 bottom-35 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
+                  isDarkMode 
+                    ? 'bg-[#181f38]/40 border-[#181f38]/20' 
+                    : 'bg-white/40 border-white/20'
+                }`}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 1.3 }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  rotate: 1,
-                  y: -5,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  transition: { duration: 0.2 }
-                }}
               >
                 <div className="flex items-start gap-2">
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-400 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Users className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-gray-900 text-xs mb-1 text-left">Доклад</h4>
-                    <p className="text-gray-600 text-xs mb-1 line-clamp-1 text-left">"Экология и природа"</p>
+                    <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>Доклад</h4>
+                    <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
+                      isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                    }`}>"Экология и природа"</p>
                     <div className="flex items-center justify-between">
                       <span className="text-orange-600 font-bold text-xs">550 руб.</span>
                       <span className="text-gray-500 text-xs">2.4 мин</span>
@@ -588,7 +676,9 @@ export default function Home() {
             {/* Main content - centered and free */}
             <div className="relative z-10 max-w-5xl mx-auto text-center mb-16">
               <motion.h1 
-                className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-gray-900"
+                className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight transition-colors duration-300 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
@@ -600,7 +690,9 @@ export default function Home() {
               </motion.h1>
 
               <motion.p 
-                className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed max-w-3xl mx-auto"
+                className={`text-lg md:text-xl mb-10 leading-relaxed max-w-3xl mx-auto transition-colors duration-300 ${
+                  isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                }`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
@@ -663,115 +755,155 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               Наши услуги
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+              isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+            }`}>
               Профессиональная помощь студентам во всех видах академических работ
             </p>
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             <motion.div 
-              className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+                isDarkMode 
+                  ? 'bg-[#181f38]/60 border-[#181f38]/40' 
+                  : 'bg-white/60 border-white/40'
+              }`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              whileHover={{ y: -5 }}
             >
               {/* Image placeholder */}
-              <div className="relative w-full h-40 mb-4 rounded-2xl overflow-hidden bg-white">
+              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+                isDarkMode ? 'bg-[#101831]' : 'bg-white'
+              }`}>
                 <img src="/card1.png" alt="Рефераты" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Рефераты</h3>
-                <p className="text-gray-600 mb-4 leading-relaxed flex-1 text-sm">
+                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>Рефераты</h3>
+                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                  isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                }`}>
                   Качественные рефераты по любым предметам с уникальностью 90%+
                 </p>
                 <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">От 500 руб.</span>
-                  <span className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">10-20 стр.</span>
-                  <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full">3 мин</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-blue-100'} text-blue-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 500 руб.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>10-20 стр.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
                 </div>
               </div>
             </motion.div>
             
             <motion.div 
-              className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+                isDarkMode 
+                  ? 'bg-[#181f38]/60 border-[#181f38]/40' 
+                  : 'bg-white/60 border-white/40'
+              }`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              whileHover={{ y: -5 }}
             >
               {/* Image placeholder */}
-              <div className="relative w-full h-40 mb-4 rounded-2xl overflow-hidden bg-white">
+              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+                isDarkMode ? 'bg-[#101831]' : 'bg-white'
+              }`}>
                 <img src="/card2.png" alt="Курсовые работы" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Курсовые работы</h3>
-                <p className="text-gray-600 mb-4 leading-relaxed flex-1 text-sm">
+                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>Курсовые работы</h3>
+                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                  isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                }`}>
                   Серьезные исследовательские работы с глубоким анализом темы
                 </p>
                 <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full">От 1500 руб.</span>
-                  <span className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">30-50 стр.</span>
-                  <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full">3 мин</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-purple-100'} text-purple-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 1500 руб.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>30-50 стр.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
                 </div>
               </div>
             </motion.div>
             
             <motion.div 
-              className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+                isDarkMode 
+                  ? 'bg-[#181f38]/60 border-[#181f38]/40' 
+                  : 'bg-white/60 border-white/40'
+              }`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              whileHover={{ y: -5 }}
             >
               {/* Image placeholder */}
-              <div className="relative w-full h-40 mb-4 rounded-2xl overflow-hidden bg-white">
+              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+                isDarkMode ? 'bg-[#101831]' : 'bg-white'
+              }`}>
                 <img src="/card3.png" alt="СРС" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">СРС</h3>
-                <p className="text-gray-600 mb-4 leading-relaxed flex-1 text-sm">
+                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>СРС</h3>
+                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                  isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                }`}>
                   Самостоятельные работы студентов любой сложности
                 </p>
                 <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">От 300 руб.</span>
-                  <span className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">5-15 стр.</span>
-                  <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full">3 мин</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 300 руб.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>5-15 стр.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
                 </div>
               </div>
             </motion.div>
             
             <motion.div 
-              className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+                isDarkMode 
+                  ? 'bg-[#181f38]/60 border-[#181f38]/40' 
+                  : 'bg-white/60 border-white/40'
+              }`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              whileHover={{ y: -5 }}
             >
               {/* Image placeholder */}
-              <div className="relative w-full h-40 mb-4 rounded-2xl overflow-hidden bg-white">
+              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+                isDarkMode ? 'bg-[#101831]' : 'bg-white'
+              }`}>
                 <img src="/card4.png" alt="Доклады" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Доклады</h3>
-                <p className="text-gray-600 mb-4 leading-relaxed flex-1 text-sm">
+                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>Доклады</h3>
+                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                  isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                }`}>
                   Презентации и доклады для выступлений на семинарах
                 </p>
                 <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="bg-orange-100 text-orange-800 text-xs font-semibold px-3 py-1 rounded-full">От 400 руб.</span>
-                  <span className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">5-10 стр.</span>
-                  <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full">3 мин</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-orange-100'} text-orange-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 400 руб.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>5-10 стр.</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
                 </div>
               </div>
             </motion.div>
@@ -780,7 +912,11 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="process" className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 relative overflow-hidden">
+      <section id="process" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-[#050c26]' 
+          : 'bg-gradient-to-r from-blue-50 to-purple-50'
+      }`}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div 
             className="text-center mb-16"
@@ -789,16 +925,22 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               Как это работает
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+              isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+            }`}>
               Получите потрясающие студенческие работы всего за 3 простых шага
             </p>
           </motion.div>
           
           {/* Main Content Block */}
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/40 overflow-visible max-w-7xl mx-auto">
+          <div className={`relative backdrop-blur-xl rounded-3xl shadow-lg overflow-visible max-w-7xl mx-auto border ${
+            isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+          }`}>
             <div className="flex flex-col lg:flex-row items-stretch">
               {/* Left side - Steps */}
               <motion.div 
@@ -823,10 +965,10 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-[20px] font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      <h3 className={`text-[20px] font-bold mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-blue-600`}>
                         Введите требования
                       </h3>
-                      <p className="text-gray-600 leading-relaxed text-[14px]">
+                      <p className={`leading-relaxed text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                         Опишите тему работы, укажите количество страниц, тип работы и особые требования. 
                         Наш ИИ проанализирует ваш запрос и создаст план работы.
                       </p>
@@ -847,10 +989,10 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-[20px] font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
+                      <h3 className={`text-[20px] font-bold mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-purple-600`}>
                         Подтвердите план
                       </h3>
-                      <p className="text-gray-600 leading-relaxed text-[14px]">
+                      <p className={`leading-relaxed text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                         Подтвердите план работы и оплатите заказ. Наш сервис сделает работу за 3 минуты.
                       </p>
                     </div>
@@ -870,10 +1012,10 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-[20px] font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+                      <h3 className={`text-[20px] font-bold mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-green-600`}>
                         Скачайте работу
                       </h3>
-                      <p className="text-gray-600 leading-relaxed text-[14px]">
+                      <p className={`leading-relaxed text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                         Получите готовую работу высочайшего качества в формате Word с гарантией уникальности. 
                         Наслаждайтесь отличными оценками и свободным временем!
                       </p>
@@ -916,7 +1058,9 @@ export default function Home() {
       </section>
 
       {/* Benefits */}
-      <section id="benefits" className="py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50 relative overflow-hidden">
+      <section id="benefits" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+        isDarkMode ? 'bg-[#050c26]' : 'bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50'
+      }`}>
         <div className="container mx-auto px-6 relative z-10">
           {/* Header */}
           <motion.div 
@@ -926,10 +1070,10 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Почему выбирают нас
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
               Преимущества, которые делают нас лучшими
             </p>
           </motion.div>
@@ -941,7 +1085,9 @@ export default function Home() {
               {/* Top row cards - 2 horizontal cards */}
               <div className="flex justify-center items-start gap-90 absolute top-20 left-170 transform -translate-x-1/2 w-full max-w-4xl">
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/40 w-80 z-10 flex items-center gap-4"
+                  className={`backdrop-blur-sm rounded-xl p-6 shadow-lg border w-80 z-10 flex items-center gap-4 transition-colors ${
+                    isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                  }`}
                   initial={{ opacity: 0, y: -50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -951,13 +1097,15 @@ export default function Home() {
                     <Zap className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Скорость</div>
-                    <div className="text-sm text-gray-500">За 3 минуты</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Скорость</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>За 3 минуты</div>
                   </div>
                 </motion.div>
 
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/40 w-80 z-10 flex items-center gap-4"
+                  className={`backdrop-blur-sm rounded-xl p-6 shadow-lg border w-80 z-10 flex items-center gap-4 transition-colors ${
+                    isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                  }`}
                   initial={{ opacity: 0, y: -50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -967,8 +1115,8 @@ export default function Home() {
                     <Shield className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Качество</div>
-                    <div className="text-sm text-gray-500">100% гарантия</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Качество</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>100% гарантия</div>
                   </div>
                 </motion.div>
               </div>
@@ -976,7 +1124,9 @@ export default function Home() {
               {/* Middle row cards - 2 horizontal cards */}
               <div className="flex justify-center items-start gap-120 absolute top-53 left-175 transform -translate-x-1/2 w-full max-w-6xl">
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/40 w-80 z-10 flex items-center gap-4"
+                  className={`backdrop-blur-sm rounded-xl p-6 shadow-lg border w-80 z-10 flex items-center gap-4 transition-colors ${
+                    isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                  }`}
                   initial={{ opacity: 0, y: -50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -986,13 +1136,15 @@ export default function Home() {
                     <Award className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Уникальность</div>
-                    <div className="text-sm text-gray-500">90%+</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Уникальность</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>90%+</div>
                   </div>
                 </motion.div>
 
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/40 w-80 z-10 flex items-center gap-4"
+                  className={`backdrop-blur-sm rounded-xl p-6 shadow-lg border w-80 z-10 flex items-center gap-4 transition-colors ${
+                    isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                  }`}
                   initial={{ opacity: 0, y: -50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -1002,8 +1154,8 @@ export default function Home() {
                     <Heart className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Поддержка</div>
-                    <div className="text-sm text-gray-500">24/7</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Поддержка</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>24/7</div>
                   </div>
                 </motion.div>
               </div>
@@ -1011,7 +1163,9 @@ export default function Home() {
               {/* Fifth card - right after the 4 cards */}
               <div className="flex justify-center items-start absolute -top-12 left-175 transform -translate-x-1/2 w-full max-w-4xl">
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/40 w-80 z-10 flex items-center gap-4"
+                  className={`backdrop-blur-sm rounded-xl p-6 shadow-lg border w-80 z-10 flex items-center gap-4 transition-colors ${
+                    isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                  }`}
                   initial={{ opacity: 0, y: -50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -1021,8 +1175,8 @@ export default function Home() {
                     <Star className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-bold text-gray-900">Доступные цены</div>
-                    <div className="text-sm text-gray-500">Без переплат</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Доступные цены</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>Без переплат</div>
                   </div>
                 </motion.div>
               </div>
@@ -1060,10 +1214,12 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section id="reviews" className="py-20 bg-gradient-to-r from-purple-50 to-blue-50 relative overflow-hidden">
+      <section id="reviews" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+        isDarkMode ? 'bg-[#050c26]' : 'bg-gradient-to-r from-purple-50 to-blue-50'
+      }`}>
         <div className="container mx-auto px-6 relative z-10">
           {/* Background graphic */}
-          <div className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
+          <div className={`absolute inset-0 w-full h-full pointer-events-none ${isDarkMode ? 'opacity-0' : 'opacity-30'}` }>
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full blur-3xl"></div>
           </div>
           
@@ -1075,25 +1231,27 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Студенты любят то, что мы делаем
               </h2>
               <div className="mb-6"></div>
               <div className="max-w-3xl mx-auto mb-4">
-                <p className="text-xl text-gray-600">
+                <p className={`text-xl transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                   Воспользуйтесь подлинными отзывами и укрепите доверие с помощью отзывов, которые имеют значение. 
                 </p>
               </div>
             </motion.div>
 
             {/* Testimonial Cards Animation Container */}
-            <TestimonialAnimatedContainer />
+            <TestimonialAnimatedContainer isDarkMode={isDarkMode} />
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50 relative overflow-hidden">
+      <section id="faq" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+        isDarkMode ? 'bg-[#050c26]' : 'bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50'
+      }`}>
         <div className="max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           {/* Title */}
           <motion.div 
@@ -1103,23 +1261,25 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Ваши вопросы — наши ответы
             </h2>
-            <p className="text-xl text-gray-600 leading-relaxed">
+            <p className={`text-xl leading-relaxed transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
               Узнайте всё о StudAI: от возможностей до гарантий качества
             </p>
           </motion.div>
           {/* End Title */}
 
-          <FAQAccordion />
+          <FAQAccordion isDarkMode={isDarkMode} />
         </div>
       </section>
       {/* End FAQ */}
 
       {/* Ready to get your work section - outside container */}
       <div data-test-id="help-container" className="container mx-auto px-22 my-20">
-        <section className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/40 overflow-visible relative mx-12 md:mx-8 lg:mx-12">
+        <section className={`backdrop-blur-sm rounded-3xl shadow-lg overflow-visible relative mx-12 md:mx-8 lg:mx-12 border ${
+          isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/60 border-white/40'
+        }`}>
           <div className="relative" style={{ height: "424px" }}>
             <div className="flex items-center h-full">
               {/* Left content */}
@@ -1130,13 +1290,17 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                <h2 className={`text-3xl md:text-4xl font-bold mb-6 leading-tight transition-colors ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>
                   Готовы заказать <br />
                   свою работу?
                 </h2>
                 
                 <div className="mb-8">
-                  <p className="text-lg text-gray-600 leading-relaxed">
+                  <p className={`text-lg leading-relaxed transition-colors ${
+                    isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+                  }`}>
                     StudAI поможет вам создать качественную работу за считанные минуты. <br />
                     Рефераты, курсовые, СРС и доклады с гарантией уникальности 90%+.
                   </p>
@@ -1187,14 +1351,16 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-xl text-gray-700 py-16 relative border-t border-white/20">
+      <footer className={`backdrop-blur-xl py-16 relative border-t transition-colors ${
+        isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/30 text-[#78819d]' : 'bg-white/80 border-white/20 text-gray-700'
+      }`}>
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Company Info */}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
                 <img 
-                  src="/studai-logo.svg" 
+                  src={isDarkMode ? "/studai-logo-white.svg" : "/studai-logo.svg"} 
                   alt="StudAI Logo" 
                   className="w-10 h-10 relative -top-0.75"
                   onError={(e) => {
@@ -1209,9 +1375,9 @@ export default function Home() {
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
                   <GraduationCap className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-blue-600">StudAI</span>
+                <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-blue-600'}`}>StudAI</span>
               </div>
-              <p className="text-gray-600 leading-relaxed mb-6">
+              <p className={`leading-relaxed mb-6 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                 Современный сервис для создания студенческих работ с помощью искусственного интеллекта. 
                 Качественные рефераты, курсовые, СРС и доклады за 3 минуты.
               </p>
@@ -1243,41 +1409,41 @@ export default function Home() {
             
             {/* Services */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Услуги</h3>
-              <ul className="space-y-3 text-gray-600">
-                <li><a href="#services" className="hover:text-blue-600 transition-colors">Рефераты</a></li>
-                <li><a href="#services" className="hover:text-blue-600 transition-colors">Курсовые работы</a></li>
-                <li><a href="#services" className="hover:text-blue-600 transition-colors">СРС</a></li>
-                <li><a href="#services" className="hover:text-blue-600 transition-colors">Доклады</a></li>
-                <li><a href="#" className="hover:text-blue-600 transition-colors">Презентации</a></li>
+              <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Услуги</h3>
+              <ul className={`space-y-3 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Рефераты</a></li>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Курсовые работы</a></li>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>СРС</a></li>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Доклады</a></li>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Презентации</a></li>
               </ul>
             </div>
             
             {/* Company */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Компания</h3>
-              <ul className="space-y-3 text-gray-600">
-                <li><a href="#" className="hover:text-blue-600 transition-colors">О нас</a></li>
-                <li><a href="#reviews" className="hover:text-blue-600 transition-colors">Отзывы</a></li>
-                <li><a href="#" className="hover:text-blue-600 transition-colors">Гарантии</a></li>
-                <li><a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-blue-600 transition-colors">Поддержка</a></li>
+              <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Компания</h3>
+              <ul className={`space-y-3 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>О нас</a></li>
+                <li><a href="#reviews" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Отзывы</a></li>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Гарантии</a></li>
+                <li><a href="#faq" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>FAQ</a></li>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Поддержка</a></li>
               </ul>
             </div>
             
             {/* Contact */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Контакты</h3>
-              <div className="space-y-4 text-gray-600">
+              <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Контакты</h3>
+              <div className={`space-y-4 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 mr-3 text-blue-600" />
-                  <a href="tel:+996555123456" className="hover:text-blue-600 transition-colors">
+                  <a href="tel:+996555123456" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>
                     +996 555 123 456
                   </a>
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-5 w-5 mr-3 text-blue-600" />
-                  <a href="mailto:info@studai.kg" className="hover:text-blue-600 transition-colors">
+                  <a href="mailto:info@studai.kg" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>
                     info@studai.kg
                   </a>
                 </div>
@@ -1289,11 +1455,11 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500">
+          <div className={`border-t mt-12 pt-8 flex flex-col md:flex-row justify_between items-center ${isDarkMode ? 'border-[#181f38]/40 text-[#78819d]' : 'border-gray-200 text-gray-500'}`}>
             <p>&copy; 2025 StudAI. Все права защищены.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-blue-600 transition-colors">Политика конфиденциальности</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Условия использования</a>
+              <a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Политика конфиденциальности</a>
+              <a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Условия использования</a>
             </div>
           </div>
         </div>
