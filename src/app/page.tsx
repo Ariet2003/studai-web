@@ -383,9 +383,9 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50 relative overflow-hidden">
       
       {/* Header */}
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-white/20 z-50">
+      <header className="fixed top-4 left-4 right-4 bg-white/80 backdrop-blur-xl border border-white/40 z-50 rounded-3xl shadow-lg">
         <motion.div 
-          className="container mx-auto px-6 py-4 flex items-center justify-between"
+          className="px-8 py-4 flex items-center justify-between"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -394,30 +394,58 @@ export default function Home() {
             className="flex items-center space-x-3"
             whileHover={{ scale: 1.05 }}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+            <img 
+              src="/studai-logo.svg" 
+              alt="StudAI Logo" 
+              className="w-10 h-10 relative -top-0.75"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                target.style.display = 'none';
+                const nextElement = target.nextElementSibling as HTMLElement;
+                if (nextElement) {
+                  nextElement.style.display = 'flex';
+                }
+              }}
+            />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">StudAI</span>
+            <span className="text-2xl font-bold text-blue-600">StudAI</span>
           </motion.div>
           
           <nav className="hidden md:flex space-x-8">
-            <a href="#services" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Услуги</a>
-            <a href="#process" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Как работает</a>
-            <a href="#benefits" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Преимущества</a>
-            <a href="#reviews" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Отзывы</a>
-            <a href="#faq" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">FAQ</a>
+            <a href="#services" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              Услуги
+            </a>
+            <a href="#process" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              Как работает
+            </a>
+            <a href="#benefits" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              Преимущества
+            </a>
+            <a href="#reviews" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              Отзывы
+            </a>
+            <a href="#faq" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              FAQ
+            </a>
           </nav>
           
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold shadow-lg">
-              Начать
-            </Button>
-          </motion.div>
+          <div className="flex items-center space-x-6">
+            <a href="#" className="text-black font-bold hover:text-blue-600 transition-colors">
+              Войти
+            </a>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold shadow-lg">
+                Создать аккаунт
+              </Button>
+            </motion.div>
+          </div>
         </motion.div>
       </header>
 
       {/* Hero Section */}
-      <section className="pt-28 pb-16 px-6 relative">
+      <section className="pt-32 pb-16 px-6 relative">
         <div className="container mx-auto text-center relative z-10">
           <motion.div 
             className="max-w-6xl mx-auto"
@@ -1165,10 +1193,23 @@ export default function Home() {
             {/* Company Info */}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                <img 
+                  src="/studai-logo.svg" 
+                  alt="StudAI Logo" 
+                  className="w-10 h-10 relative -top-0.75"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const nextElement = target.nextElementSibling as HTMLElement;
+                    if (nextElement) {
+                      nextElement.style.display = 'flex';
+                    }
+                  }}
+                />
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
                   <GraduationCap className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-gray-900">StudAI</span>
+                <span className="text-2xl font-bold text-blue-600">StudAI</span>
               </div>
               <p className="text-gray-600 leading-relaxed mb-6">
                 Современный сервис для создания студенческих работ с помощью искусственного интеллекта. 
@@ -1249,7 +1290,7 @@ export default function Home() {
           </div>
           
           <div className="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500">
-            <p>&copy; 2024 StudAI. Все права защищены.</p>
+            <p>&copy; 2025 StudAI. Все права защищены.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-blue-600 transition-colors">Политика конфиденциальности</a>
               <a href="#" className="hover:text-blue-600 transition-colors">Условия использования</a>
