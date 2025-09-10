@@ -22,83 +22,78 @@ import {
   Play
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { getTranslation } from '@/translations'
+import LanguageSelector from '@/components/LanguageSelector'
 
-// Данные отзывов с кыргызскими именами
-const testimonials = [
+// Функция для получения отзывов из переводов
+const getTestimonials = (t: any) => [
   {
     id: 1,
-    name: "Айтурган Асанова",
-    university: "КНУ им. Ж. Баласагына",
-    review: "Мы очень довольны StudAI и онлайн-поддержкой, которую они предоставляют. Очень быстрое и легкое общение.",
+    name: t.testimonials.reviews.r1.name,
+    university: t.testimonials.reviews.r1.university,
+    review: t.testimonials.reviews.r1.review,
     avatar: "https://ui-avatars.com/api/?name=A+A&background=4F46E5&color=fff&size=64"
   },
   {
     id: 2,
-    name: "Даниил Османов",
-    university: "КГТУ им. И. Раззакова",
-    review: "Мы хотели платформу, которая предоставляла бы нам необходимые функции по справедливой цене.",
+    name: t.testimonials.reviews.r2.name,
+    university: t.testimonials.reviews.r2.university,
+    review: t.testimonials.reviews.r2.review,
     avatar: "https://ui-avatars.com/api/?name=D+O&background=059669&color=fff&size=64"
   },
   {
     id: 3,
-    name: "Гүлнара Токтосунова",
-    university: "АУЦА",
-    review: "Мы используем почти все виджеты StudAI. Они отлично подходят для демонстрации наших работ.",
+    name: t.testimonials.reviews.r3.name,
+    university: t.testimonials.reviews.r3.university,
+    review: t.testimonials.reviews.r3.review,
     avatar: "https://ui-avatars.com/api/?name=G+T&background=DC2626&color=fff&size=64"
   },
   {
     id: 4,
-    name: "Бекжан Исаков",
-    university: "КЭУ им. М. Рыскулбекова",
-    review: "Команда StudAI потрясающая. Вы можете очень легко связаться и они быстро помогут с вашей проблемой!",
+    name: t.testimonials.reviews.r4.name,
+    university: t.testimonials.reviews.r4.university,
+    review: t.testimonials.reviews.r4.review,
     avatar: "https://ui-avatars.com/api/?name=B+I&background=7C3AED&color=fff&size=64"
   },
   {
     id: 5,
-    name: "Нурайым Токтогулова",
-    university: "МУК",
-    review: "Легко использовать и полезная команда, когда что-то становится слишком техническим для понимания!",
+    name: t.testimonials.reviews.r5.name,
+    university: t.testimonials.reviews.r5.university,
+    review: t.testimonials.reviews.r5.review,
     avatar: "https://ui-avatars.com/api/?name=N+T&background=EA580C&color=fff&size=64"
   },
   {
     id: 6,
-    name: "Алтынбек Мамбетов",
-    university: "КГУ им. И. Арабаева",
-    review: "Полная платформа для обработки всего, что связано с отзывами. Все задокументировано о том, как реализовать.",
+    name: t.testimonials.reviews.r6.name,
+    university: t.testimonials.reviews.r6.university,
+    review: t.testimonials.reviews.r6.review,
     avatar: "https://ui-avatars.com/api/?name=A+M&background=0891B2&color=fff&size=64"
   }
 ];
 
-// Список университетов для бегущей строки
-const universities = [
-  "КНУ им. Ж. Баласагына",
-  "КГТУ им. И. Раззакова", 
-  "АУЦА",
-  "КЭУ им. М. Рыскулбекова",
-  "МУК",
-  "КГУ им. И. Арабаева",
-  "КРСУ",
-  "КГМА им. И.К. Ахунбаева",
-  "КГУСТА им. Н. Исанова",
-  "КГПУ им. И. Арабаева"
-];
+// Список университетов для бегущей строки - теперь динамический
+const getUniversities = (t: any) => t.testimonials.universities;
 
 // Компонент бегущей строки университетов
 function UniversityTicker({ isDarkMode }: { isDarkMode: boolean }) {
+  const { language } = useLanguage();
+  const t = getTranslation(language);
+  const universities = getUniversities(t);
   return (
-    <div className="relative mb-6 h-12 overflow-hidden">
+    <div className="relative mb-4 md:mb-6 h-10 md:h-12 overflow-hidden">
       {/* Градиенты для плавного исчезновения по краям */}
-      <div className={`absolute left-0 top-0 w-32 h-full bg-gradient-to-r z-10 pointer-events-none ${isDarkMode ? 'from-[#050c26] to-transparent opacity-80' : 'from-purple-50 to-transparent'}`}></div>
-      <div className={`absolute right-0 top-0 w-32 h-full bg-gradient-to-l z-10 pointer-events-none ${isDarkMode ? 'from-[#050c26] to-transparent opacity-80' : 'from-blue-50 to-transparent'}`}></div>
+      <div className={`absolute left-0 top-0 w-16 md:w-32 h-full bg-gradient-to-r z-10 pointer-events-none ${isDarkMode ? 'from-[#050c26] to-transparent opacity-80' : 'from-purple-50 to-transparent'}`}></div>
+      <div className={`absolute right-0 top-0 w-16 md:w-32 h-full bg-gradient-to-l z-10 pointer-events-none ${isDarkMode ? 'from-[#050c26] to-transparent opacity-80' : 'from-blue-50 to-transparent'}`}></div>
       
       {/* Бегущая строка */}
       <div className="flex items-center h-full">
         <motion.div
-          className="flex items-center space-x-8 whitespace-nowrap"
+          className="flex items-center space-x-4 md:space-x-8 whitespace-nowrap"
           animate={{
-            x: [0, -80 * universities.length, 0]
+            x: [0, -60 * universities.length, 0]
           }}
           transition={{
             duration: 20,
@@ -106,10 +101,10 @@ function UniversityTicker({ isDarkMode }: { isDarkMode: boolean }) {
             ease: "linear"
           }}
         >
-          {universities.map((university, index) => (
+          {universities.map((university: string, index: number) => (
             <div
               key={index}
-              className="text-base font-bold text-gray-500 px-4"
+              className="text-sm md:text-base font-bold text-gray-500 px-2 md:px-4"
             >
               {university}
             </div>
@@ -120,8 +115,224 @@ function UniversityTicker({ isDarkMode }: { isDarkMode: boolean }) {
   );
 }
 
+// Компонент свайпабельных карточек услуг
+function ServiceCardSwiper({ isDarkMode }: { isDarkMode: boolean }) {
+  const { language } = useLanguage();
+  const t = getTranslation(language);
+  const [currentCard, setCurrentCard] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  const services = [
+    {
+      image: "/card1.png",
+      alt: "Рефераты",
+      title: t.services.essay.title,
+      description: t.services.essay.description,
+      from: t.services.essay.from,
+      pages: t.services.essay.pages,
+      time: t.services.essay.time,
+      color: "blue"
+    },
+    {
+      image: "/card2.png",
+      alt: "Курсовые работы",
+      title: t.services.coursework.title,
+      description: t.services.coursework.description,
+      from: t.services.coursework.from,
+      pages: t.services.coursework.pages,
+      time: t.services.coursework.time,
+      color: "purple"
+    },
+    {
+      image: "/card3.png",
+      alt: "СРС",
+      title: t.services.srs.title,
+      description: t.services.srs.description,
+      from: t.services.srs.from,
+      pages: t.services.srs.pages,
+      time: t.services.srs.time,
+      color: "green"
+    },
+    {
+      image: "/card4.png",
+      alt: "Доклады",
+      title: t.services.presentation.title,
+      description: t.services.presentation.description,
+      from: t.services.presentation.from,
+      pages: t.services.presentation.pages,
+      time: t.services.presentation.time,
+      color: "orange"
+    }
+  ];
+
+  const handleDragEnd = (event: any, info: any) => {
+    const threshold = 50;
+    if (isAnimating) return;
+    
+    if (info.offset.x > threshold && currentCard > 0) {
+      setIsAnimating(true);
+      setCurrentCard(prev => prev - 1);
+      setTimeout(() => setIsAnimating(false), 500);
+    } else if (info.offset.x < -threshold && currentCard < services.length - 1) {
+      setIsAnimating(true);
+      setCurrentCard(prev => prev + 1);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+  };
+
+  const handleCardChange = (index: number) => {
+    if (isAnimating || index === currentCard) return;
+    setIsAnimating(true);
+    setCurrentCard(index);
+    setTimeout(() => setIsAnimating(false), 500);
+  };
+
+  const getColorClasses = (color: string) => {
+    switch (color) {
+      case "blue":
+        return {
+          from: `${isDarkMode ? 'bg-[#050c26]' : 'bg-blue-100'} text-blue-800`,
+          fallback: 'from-blue-500 to-cyan-400'
+        };
+      case "purple":
+        return {
+          from: `${isDarkMode ? 'bg-[#050c26]' : 'bg-purple-100'} text-purple-800`,
+          fallback: 'from-purple-500 to-pink-400'
+        };
+      case "green":
+        return {
+          from: `${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-800`,
+          fallback: 'from-green-500 to-emerald-400'
+        };
+      case "orange":
+        return {
+          from: `${isDarkMode ? 'bg-[#050c26]' : 'bg-orange-100'} text-orange-800`,
+          fallback: 'from-orange-500 to-red-400'
+        };
+      default:
+        return {
+          from: `${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-800`,
+          fallback: 'from-gray-500 to-gray-400'
+        };
+    }
+  };
+
+  return (
+    <div className="relative overflow-hidden">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={currentCard}
+          className={`backdrop-blur-sm rounded-2xl p-4 shadow-lg border flex flex-col h-full ${
+            isDarkMode 
+              ? 'bg-[#181f38]/60 border-[#181f38]/40' 
+              : 'bg-white/60 border-white/40'
+          }`}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={handleDragEnd}
+          initial={{ opacity: 0, x: 100, scale: 0.8 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -100, scale: 0.8 }}
+          transition={{ 
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            duration: 0.5
+          }}
+        >
+        <motion.div 
+          className={`relative w-full h-40 mb-4 rounded-xl overflow-hidden ${
+            isDarkMode ? 'bg-[#101831]' : 'bg-white'
+          }`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+        >
+          <img 
+            src={services[currentCard].image} 
+            alt={services[currentCard].alt} 
+            className="w-full h-full object-contain transition-opacity duration-300" 
+            onError={(e) => {
+              if (e.currentTarget.parentElement) {
+                const colors = getColorClasses(services[currentCard].color);
+                e.currentTarget.parentElement.innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br ${colors.fallback} rounded-2xl flex items-center justify-center"><div class="w-8 h-8 text-white">📄</div></div></div>`;
+              }
+            }}
+          />
+        </motion.div>
+        
+        <motion.div 
+          className="flex-1 flex flex-col"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+        >
+          <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}>{services[currentCard].title}</h3>
+          <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+            isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
+          }`}>
+            {services[currentCard].description}
+          </p>
+          <motion.div 
+            className="flex flex-wrap gap-2 mt-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            <span className={`${getColorClasses(services[currentCard].color).from} text-xs font-semibold px-3 py-1 rounded-full`}>
+              {services[currentCard].from}
+            </span>
+            <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>
+              {services[currentCard].pages}
+            </span>
+            <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>
+              {services[currentCard].time}
+            </span>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+      </AnimatePresence>
+      
+      {/* Card indicators */}
+      <div className="flex justify-center mt-4 space-x-2">
+        {services.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => handleCardChange(index)}
+            disabled={isAnimating}
+            className={`w-3 h-3 rounded-full transition-all duration-300 hover:scale-110 disabled:cursor-not-allowed ${
+              index === currentCard 
+                ? 'bg-blue-600 scale-110' 
+                : 'bg-gray-300 hover:bg-gray-400'
+            }`}
+          />
+        ))}
+      </div>
+      
+      {/* Swipe hint */}
+      <motion.div 
+        className="text-center mt-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.3 }}
+      >
+        <p className={`text-xs ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>
+          Потяните влево или вправо • Карточка {currentCard + 1} из {services.length}
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
 // Компонент анимированных отзывов
 function TestimonialAnimatedContainer({ isDarkMode }: { isDarkMode: boolean }) {
+  const { language } = useLanguage();
+  const t = getTranslation(language);
+  const testimonials = getTestimonials(t);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [activeCards, setActiveCards] = useState([
     { container: 0, showFirst: true },
     { container: 1, showFirst: true },
@@ -130,9 +341,14 @@ function TestimonialAnimatedContainer({ isDarkMode }: { isDarkMode: boolean }) {
   ]);
 
   useEffect(() => {
+    // Mobile: cycle through all testimonials
+    const mobileInterval = setInterval(() => {
+      setCurrentTestimonial(prev => (prev + 1) % testimonials.length);
+    }, 4000);
+
+    // Desktop: container animation
     let currentContainer = 0;
-    
-    const interval = setInterval(() => {
+    const desktopInterval = setInterval(() => {
       setActiveCards(prev => {
         const newState = [...prev];
         newState[currentContainer] = {
@@ -143,18 +359,49 @@ function TestimonialAnimatedContainer({ isDarkMode }: { isDarkMode: boolean }) {
       });
       
       currentContainer = (currentContainer + 1) % 4;
-    }, 3000); // Каждые 3 секунды
+    }, 3000);
     
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(mobileInterval);
+      clearInterval(desktopInterval);
+    };
+  }, [testimonials.length]);
 
   return (
     <div className="relative w-full">
       {/* Бегущая строка с университетами */}
       <UniversityTicker isDarkMode={isDarkMode} />
 
-      {/* Карточки отзывов */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+      {/* Mobile: Single testimonial card */}
+      <div className="md:hidden max-w-sm mx-auto">
+        <motion.div
+          key={currentTestimonial}
+          className={`backdrop-blur-sm rounded-xl p-4 shadow-lg border transition-colors ${
+            isDarkMode ? 'bg-[#181f38]/90 border-[#181f38]/40' : 'bg-white/90 border-white/40'
+          }`}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ duration: 0.5 }}
+        >
+          <TestimonialCard testimonial={testimonials[currentTestimonial]} isDarkMode={isDarkMode} />
+        </motion.div>
+        
+        {/* Mobile indicators */}
+        <div className="flex justify-center mt-4 space-x-2">
+          {testimonials.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                index === currentTestimonial ? 'bg-blue-600' : 'bg-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: Grid of animated containers */}
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {Array.from({ length: 4 }, (_, containerIndex) => (
           <TestimonialContainer
             key={containerIndex}
@@ -178,6 +425,10 @@ function TestimonialContainer({
   showFirst: boolean;
   isDarkMode: boolean;
 }) {
+  const { language } = useLanguage();
+  const t = getTranslation(language);
+  const testimonials = getTestimonials(t);
+  
   // Определяем индексы отзывов для каждого контейнера
   const getTestimonialIndices = (containerIndex: number) => {
     const baseIndex = containerIndex * 2;
@@ -191,7 +442,7 @@ function TestimonialContainer({
 
   return (
     <motion.div
-      className="relative h-80"
+      className="relative h-64 md:h-80"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -199,7 +450,7 @@ function TestimonialContainer({
     >
       {/* Первая карточка */}
       <div
-        className={`absolute inset-0 backdrop-blur-sm rounded-2xl p-6 shadow-lg border transition-colors ${
+        className={`absolute inset-0 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border transition-colors ${
           isDarkMode ? 'bg-[#181f38]/90 border-[#181f38]/40' : 'bg-white/90 border-white/40'
         }`}
         style={{
@@ -213,7 +464,7 @@ function TestimonialContainer({
 
       {/* Вторая карточка */}
       <div
-        className={`absolute inset-0 backdrop-blur-sm rounded-2xl p-6 shadow-lg border transition-colors ${
+        className={`absolute inset-0 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border transition-colors ${
           isDarkMode ? 'bg-[#181f38]/90 border-[#181f38]/40' : 'bg-white/90 border-white/40'
         }`}
         style={{
@@ -229,87 +480,92 @@ function TestimonialContainer({
 }
 
 // Компонент карточки отзыва
-function TestimonialCard({ testimonial, isDarkMode }: { testimonial: typeof testimonials[0]; isDarkMode: boolean }) {
+function TestimonialCard({ testimonial, isDarkMode }: { testimonial: any; isDarkMode: boolean }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {/* Звезды */}
       <div className="flex space-x-1">
         {Array.from({ length: 5 }, (_, i) => (
-          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+          <Star key={i} className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
         ))}
       </div>
       
       {/* Текст отзыва */}
-      <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+      <p className={`text-xs md:text-sm leading-relaxed ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
         "{testimonial.review}"
       </p>
       
       {/* Информация о клиенте */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2 md:space-x-3">
         <img
           src={testimonial.avatar}
           alt={testimonial.name}
-          className="w-10 h-10 rounded-full"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full"
         />
         <div className="flex-1">
-          <div className="flex items-center space-x-2">
-            <h4 className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{testimonial.name}</h4>
-            <CheckCircle className="w-4 h-4 text-green-500" />
+          <div className="flex items-center space-x-1 md:space-x-2">
+            <h4 className={`font-semibold text-xs md:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{testimonial.name}</h4>
+            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
           </div>
-          <p className={`text-xs ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>{testimonial.university}</p>
+          <p className={`text-[10px] md:text-xs ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>{testimonial.university}</p>
         </div>
       </div>
     </div>
   );
 }
 
-// FAQ данные
-const faqData = [
+// FAQ данные - теперь динамически генерируется из переводов
+const getFaqData = (t: any) => [
   {
     id: 1,
-    question: "Как быстро готовятся работы в StudAI?",
-    answer: "Наш ИИ создает качественные работы всего за 3 минуты! Просто введите тему, укажите требования и получите готовую работу в формате Word с гарантией уникальности 90%+."
+    question: t.faq.questions.q1.question,
+    answer: t.faq.questions.q1.answer
   },
   {
     id: 2,
-    question: "Какова стоимость услуг StudAI?",
-    answer: "Цены зависят от типа работы и количества страниц. Актуальную цену можно узнать на странице с ценами. Мы предлагаем доступные цены без скрытых комиссий."
+    question: t.faq.questions.q2.question,
+    answer: t.faq.questions.q2.answer
   },
   {
     id: 3,
-    question: "Гарантируете ли вы уникальность работ?",
-    answer: "Да! Мы гарантируем уникальность текста 90%+ для всех работ. Наш ИИ создает оригинальный контент, который проходит проверку на плагиат."
+    question: t.faq.questions.q3.question,
+    answer: t.faq.questions.q3.answer
   },
   {
     id: 4,
-    question: "Какие типы работ может выполнить StudAI?",
-    answer: "StudAI специализируется на создании рефератов, курсовых работ, СРС (самостоятельных работ студентов) и докладов. Мы работаем с любыми дисциплинами и темами на русском, кыргызском и английском языках."
+    question: t.faq.questions.q4.question,
+    answer: t.faq.questions.q4.answer
   },
   {
     id: 5,
-    question: "Можно ли внести изменения в готовую работу?",
-    answer: "Нет, пока что мы не предоставляем возможности для внесения изменений в готовую работу. Но вы можете проверить и изменить текст на свое усмотрение."
+    question: t.faq.questions.q5.question,
+    answer: t.faq.questions.q5.answer
   },
   {
     id: 6,
-    question: "Безопасно ли использовать StudAI?",
-    answer: "Абсолютно! Мы обеспечиваем полную конфиденциальность ваших данных. Все ваши работы и личная информация защищены современными методами шифрования. Мы не передаем информацию третьим лицам."
+    question: t.faq.questions.q6.question,
+    answer: t.faq.questions.q6.answer
   },
   {
     id: 7,
-    question: "Как происходит оплата?",
-    answer: "После подтверждение плана работы, вам будет доступно кнопки банков (Мбанк, Обанк, Демирбанк) для оплаты. При нажатии на одну из кнопок, вы будете перенаправлены на приложение банка с поставленными счетами и стоимости работы. Вы должны оплатить и отправить чек через сайт. Менеджеры проверят чек за 5 минут и подтвердят заказ. И ваша работа будет готова за 3 минуты."
+    question: t.faq.questions.q7.question,
+    answer: t.faq.questions.q7.answer
   },
   {
     id: 8,
-    question: "Может ли StudAI допустить ошибку в работе?",
-    answer: "Да, так как мы используем ИИ, он может допустить ошибку в работе, но только на 5-7%. Мы работаем над тем, чтобы этот процент был минимальным и постепенно уменьшался. Но рекомендуем вам проверять работу на уникальность и качество перед сдачей."
+    question: t.faq.questions.q8.question,
+    answer: t.faq.questions.q8.answer
   }
 ];
 
 // Компонент FAQ аккордеона
 function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
   const [openItems, setOpenItems] = useState<number[]>([1]); // Первый элемент открыт по умолчанию
+  const { language } = useLanguage();
+  const t = getTranslation(language);
+  
+  // Пересчитываем faqData при изменении языка
+  const faqData = getFaqData(t);
 
   const toggleItem = (id: number) => {
     setOpenItems(prev => 
@@ -326,7 +582,7 @@ function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
   const renderFAQItem = (item: typeof faqData[0], delay: number) => (
     <motion.div
       key={item.id}
-      className={`rounded-xl p-6 backdrop-blur-sm shadow-lg border mb-4 cursor-pointer transition-all duration-300 ${
+      className={`rounded-xl p-4 md:p-6 backdrop-blur-sm shadow-lg border mb-3 md:mb-4 cursor-pointer transition-all duration-300 ${
         isDarkMode
           ? openItems.includes(item.id)
             ? 'bg-[#181f38]/80 border-[#181f38]/40'
@@ -342,17 +598,17 @@ function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
       onClick={() => toggleItem(item.id)}
     >
       <button className="w-full text-left">
-        <div className="flex items-center justify-between gap-x-3 pb-3">
-          <h3 className={`text-lg font-semibold transition-colors ${isDarkMode ? 'text-white hover:text-blue-400' : 'text-gray-800 hover:text-blue-600'}`}>
+        <div className="flex items-center justify-between gap-x-2 md:gap-x-3 pb-2 md:pb-3">
+          <h3 className={`text-base md:text-lg font-semibold transition-colors ${isDarkMode ? 'text-white hover:text-blue-400' : 'text-gray-800 hover:text-blue-600'}`}>
             {item.question}
           </h3>
           <div className="flex-shrink-0">
             {openItems.includes(item.id) ? (
-              <svg className={`w-5 h-5 transition-colors ${isDarkMode ? 'text-[#78819d] hover:text-blue-400' : 'text-gray-600 hover:text-blue-500'}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className={`w-4 h-4 md:w-5 md:h-5 transition-colors ${isDarkMode ? 'text-[#78819d] hover:text-blue-400' : 'text-gray-600 hover:text-blue-500'}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m18 15-6-6-6 6"/>
               </svg>
             ) : (
-              <svg className={`w-5 h-5 transition-colors ${isDarkMode ? 'text-[#78819d] hover:text-blue-400' : 'text-gray-600 hover:text-blue-500'}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className={`w-4 h-4 md:w-5 md:h-5 transition-colors ${isDarkMode ? 'text-[#78819d] hover:text-blue-400' : 'text-gray-600 hover:text-blue-500'}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m6 9 6 6 6-6"/>
               </svg>
             )}
@@ -369,7 +625,7 @@ function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="overflow-hidden"
       >
-        <p className={`leading-relaxed ${isDarkMode ? 'text-[#78819d]' : 'text-gray-700'}`}>
+        <p className={`text-sm md:text-base leading-relaxed ${isDarkMode ? 'text-[#78819d]' : 'text-gray-700'}`}>
           {item.answer}
         </p>
       </motion.div>
@@ -377,14 +633,14 @@ function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 max-w-6xl mx-auto">
       {/* Левая колонка */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {leftColumnItems.map((item, index) => renderFAQItem(item, index * 0.1))}
       </div>
       
       {/* Правая колонка */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {rightColumnItems.map((item, index) => renderFAQItem(item, (index * 0.1) + 0.05))}
       </div>
     </div>
@@ -393,6 +649,22 @@ function FAQAccordion({ isDarkMode }: { isDarkMode?: boolean }) {
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { language, isClient } = useLanguage();
+  const t = getTranslation(language);
+  
+  
+  
+  // Показываем загрузку, пока не определился язык на клиентской стороне
+  if (!isClient) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Theme toggle component
   const ThemeToggle = () => (
@@ -436,25 +708,25 @@ export default function Home() {
     }`}>
       
       {/* Header */}
-      <header className={`fixed top-4 left-4 right-4 backdrop-blur-xl border z-50 rounded-3xl shadow-lg transition-colors duration-300 ${
+      <header className={`fixed top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 backdrop-blur-xl border z-50 rounded-2xl md:rounded-3xl shadow-lg transition-colors duration-300 ${
         isDarkMode 
           ? 'bg-[#181f38]/80 border-[#181f38]/40' 
           : 'bg-white/80 border-white/40'
       }`}>
         <motion.div 
-          className="px-8 py-4 flex items-center justify-between"
+          className="px-3 md:px-8 py-3 md:py-4 flex items-center justify-between"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <motion.div 
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-2 md:space-x-3"
             whileHover={{ scale: 1.05 }}
           >
             <img 
               src={isDarkMode ? "/studai-logo-white.svg" : "/studai-logo.svg"} 
               alt="StudAI Logo" 
-              className="w-10 h-10 relative -top-0.75"
+              className="w-8 h-8 md:w-10 md:h-10 relative -top-0.75"
               onError={(e) => {
                 const target = e.currentTarget as HTMLImageElement;
                 target.style.display = 'none';
@@ -464,62 +736,64 @@ export default function Home() {
                 }
               }}
             />
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
-              <GraduationCap className="h-6 w-6 text-white" />
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
+              <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
-            <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-blue-600'}`}>StudAI</span>
+            <span className={`text-xl md:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-blue-600'}`}>StudAI</span>
           </motion.div>
           
-          <nav className="hidden md:flex space-x-8">
-            <a href="#services" className={`transition-colors font-medium ${
+          <nav className="hidden lg:flex space-x-4 xl:space-x-8">
+            <a href="#services" className={`transition-colors font-medium text-sm xl:text-base ${
               isDarkMode 
                 ? 'text-[#78819d] hover:text-white' 
                 : 'text-gray-700 hover:text-blue-600'
             }`}>
-              Услуги
+              {t.nav.services}
             </a>
-            <a href="#process" className={`transition-colors font-medium ${
+            <a href="#process" className={`transition-colors font-medium text-sm xl:text-base ${
               isDarkMode 
                 ? 'text-[#78819d] hover:text-white' 
                 : 'text-gray-700 hover:text-blue-600'
             }`}>
-              Как работает
+              {t.nav.howItWorks}
             </a>
-            <a href="#benefits" className={`transition-colors font-medium ${
+            <a href="#benefits" className={`transition-colors font-medium text-sm xl:text-base ${
               isDarkMode 
                 ? 'text-[#78819d] hover:text-white' 
                 : 'text-gray-700 hover:text-blue-600'
             }`}>
-              Преимущества
+              {t.nav.benefits}
             </a>
-            <a href="#reviews" className={`transition-colors font-medium ${
+            <a href="#reviews" className={`transition-colors font-medium text-sm xl:text-base ${
               isDarkMode 
                 ? 'text-[#78819d] hover:text-white' 
                 : 'text-gray-700 hover:text-blue-600'
             }`}>
-              Отзывы
+              {t.nav.reviews}
             </a>
-            <a href="#faq" className={`transition-colors font-medium ${
+            <a href="#faq" className={`transition-colors font-medium text-sm xl:text-base ${
               isDarkMode 
                 ? 'text-[#78819d] hover:text-white' 
                 : 'text-gray-700 hover:text-blue-600'
             }`}>
-              FAQ
+              {t.nav.faq}
             </a>
           </nav>
           
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <LanguageSelector isDarkMode={isDarkMode} />
             <ThemeToggle />
-            <a href="#" className={`font-bold transition-colors ${
+            <a href="#" className={`hidden sm:block font-bold transition-colors text-sm md:text-base ${
               isDarkMode 
                 ? 'text-white hover:text-blue-600' 
                 : 'text-black hover:text-blue-600'
             }`}>
-              Войти
+              {t.nav.login}
             </a>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold shadow-lg">
-                Создать аккаунт
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-6 py-2 rounded-full font-semibold shadow-lg text-sm md:text-base">
+                <span className="hidden sm:inline">{t.nav.createAccount}</span>
+                <span className="sm:hidden">Начать</span>
               </Button>
             </motion.div>
           </div>
@@ -527,7 +801,14 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-6 relative">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-16 px-4 md:px-6 relative min-h-screen md:min-h-0 flex items-center md:block">
+        {/* Mobile gradient background - only for light theme */}
+        <div className={`md:hidden absolute inset-0 ${
+          isDarkMode 
+            ? '' 
+            : 'bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 opacity-80'
+        }`} />
+        
         <div className="container mx-auto text-center relative z-10">
           <motion.div 
             className="max-w-6xl mx-auto"
@@ -537,7 +818,7 @@ export default function Home() {
           >
             {/* Badge */}
             <motion.div 
-              className={`inline-flex items-center gap-2 backdrop-blur-sm border rounded-full px-4 py-2 mb-8 shadow-sm transition-colors duration-300 ${
+              className={`inline-flex items-center gap-2 backdrop-blur-sm border rounded-full px-3 md:px-4 py-1.5 md:py-2 mb-6 md:mb-8 shadow-sm transition-colors duration-300 ${
                 isDarkMode 
                   ? 'bg-[#181f38]/60 border-[#181f38]/40' 
                   : 'bg-white/60 border-white/40'
@@ -547,16 +828,16 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className={`text-sm font-medium transition-colors duration-300 ${
+              <span className={`text-xs md:text-sm font-medium transition-colors duration-300 ${
                 isDarkMode ? 'text-[#78819d]' : 'text-gray-700'
-              }`}>Лучший ИИ-помощник</span>
+              }`}>{t.hero.badge}</span>
             </motion.div>
 
-            {/* Background cards - behind text */}
-            <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+            {/* Background cards - desktop only */}
+            <div className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0">
               {/* Left cards */}
               <motion.div 
-                className={`absolute left-10 top-2 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
+                className={`absolute left-10 -top-5 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
                   isDarkMode 
                     ? 'bg-[#181f38]/40 border-[#181f38]/20' 
                     : 'bg-white/40 border-white/20'
@@ -572,13 +853,13 @@ export default function Home() {
                   <div className="flex-1">
                     <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>Реферат по истории</h4>
+                    }`}>{t.hero.examples.essay.title}</h4>
                     <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
-                    }`}>"Великая Отечественная война"</p>
+                    }`}>{t.hero.examples.essay.topic}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-blue-500 font-bold text-xs">700 руб.</span>
-                      <span className="text-gray-500 text-xs">3.2 мин</span>
+                      <span className="text-blue-500 font-bold text-xs">{t.hero.examples.essay.price}</span>
+                      <span className="text-gray-500 text-xs">{t.hero.examples.essay.time}</span>
                     </div>
                   </div>
                 </div>
@@ -601,13 +882,13 @@ export default function Home() {
                   <div className="flex-1">
                     <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>Курсовая работа</h4>
+                    }`}>{t.hero.examples.coursework.title}</h4>
                     <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
-                    }`}>"Анализ рынка IT-услуг"</p>
+                    }`}>{t.hero.examples.coursework.topic}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-purple-500 font-bold text-xs">1800 руб.</span>
-                      <span className="text-gray-500 text-xs ">2.1 мин</span>
+                      <span className="text-purple-500 font-bold text-xs">{t.hero.examples.coursework.price}</span>
+                      <span className="text-gray-500 text-xs">{t.hero.examples.coursework.time}</span>
                     </div>
                   </div>
                 </div>
@@ -615,7 +896,7 @@ export default function Home() {
 
               {/* Right cards */}
               <motion.div 
-                className={`absolute right-10 top-8 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
+                className={`absolute right-10 -top-4 backdrop-blur-lg rounded-xl p-3 shadow-lg border w-64 cursor-pointer pointer-events-auto hover:z-10 opacity-60 blur-[1.4px] transition-colors duration-300 ${
                   isDarkMode 
                     ? 'bg-[#181f38]/40 border-[#181f38]/20' 
                     : 'bg-white/40 border-white/20'
@@ -631,13 +912,13 @@ export default function Home() {
                   <div className="flex-1">
                     <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>СРС по физике</h4>
+                    }`}>{t.hero.examples.srs.title}</h4>
                     <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
-                    }`}>"Квантовая механика"</p>
+                    }`}>{t.hero.examples.srs.topic}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-green-600 font-bold text-xs">450 руб.</span>
-                      <span className="text-gray-500 text-xs">2.7 мин</span>
+                      <span className="text-green-600 font-bold text-xs">{t.hero.examples.srs.price}</span>
+                      <span className="text-gray-500 text-xs">{t.hero.examples.srs.time}</span>
                     </div>
                   </div>
                 </div>
@@ -660,13 +941,13 @@ export default function Home() {
                   <div className="flex-1">
                     <h4 className={`font-bold text-xs mb-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>Доклад</h4>
+                    }`}>{t.hero.examples.report.title}</h4>
                     <p className={`text-xs mb-1 line-clamp-1 text-left transition-colors duration-300 ${
                       isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
-                    }`}>"Экология и природа"</p>
+                    }`}>{t.hero.examples.report.topic}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-orange-600 font-bold text-xs">550 руб.</span>
-                      <span className="text-gray-500 text-xs">2.4 мин</span>
+                      <span className="text-orange-600 font-bold text-xs">{t.hero.examples.report.price}</span>
+                      <span className="text-gray-500 text-xs">{t.hero.examples.report.time}</span>
                     </div>
                   </div>
                 </div>
@@ -674,36 +955,35 @@ export default function Home() {
             </div>
 
             {/* Main content - centered and free */}
-            <div className="relative z-10 max-w-5xl mx-auto text-center mb-16">
+            <div className="relative z-10 max-w-5xl mx-auto text-center mb-12 md:mb-16 px-2">
               <motion.h1 
-                className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight transition-colors duration-300 ${
+                className={`text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 leading-tight transition-colors duration-300 ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                StudAI — создавайте студенческие работы с помощью ИИ всего{' '}
+                {t.hero.title}{' '}
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  за 3 минуты
+                  {t.hero.titleHighlight}
                 </span>
               </motion.h1>
 
               <motion.p 
-                className={`text-lg md:text-xl mb-10 leading-relaxed max-w-3xl mx-auto transition-colors duration-300 ${
+                className={`text-base md:text-lg lg:text-xl mb-8 md:mb-10 leading-relaxed max-w-3xl mx-auto transition-colors duration-300 ${
                   isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
                 }`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                Рефераты, курсовые работы, СРС и доклады высочайшего качества. Просто введите тему, количество страниц, тип работы и ваша 
-                работа будет готова за считанные минуты.
+                {t.hero.subtitle}
               </motion.p>
 
               {/* Buttons */}
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center px-4"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
@@ -711,13 +991,13 @@ export default function Home() {
                  <motion.div 
                    whileHover={{ scale: 1.05, y: -2 }} 
                    whileTap={{ scale: 0.95 }}
-                   className="group"
+                   className="group w-full sm:w-auto"
                  >
                    <Button 
-                     className="text-lg px-12 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-[50px] font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center gap-3"
+                     className="text-base md:text-lg px-8 md:px-12 py-4 md:py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-[50px] font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto"
                    >
-                     <FileText className="h-5 w-5" />
-                     Сделать работу
+                     <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                     {t.hero.createWork}
                    </Button>
                  </motion.div>
                  
@@ -727,15 +1007,19 @@ export default function Home() {
                      y: -2
                    }} 
                    whileTap={{ scale: 0.95 }}
-                   className="group"
+                   className="group w-full sm:w-auto"
                  >
                    <Button 
-                     variant="outline"
-                     className="text-lg px-12 py-5 bg-white/80 hover:bg-blue-600 text-gray-700 hover:text-white border-2 border-gray-200 hover:border-blue-600 rounded-[50px] font-semibold backdrop-blur-sm transition-all duration-300 flex items-center gap-3"
-                   >
-                     <CheckCircle className="h-5 w-5" />
-                     Стоимость
-                   </Button>
+                   variant="outline"
+                   className={`text-base md:text-lg px-8 md:px-12 py-4 md:py-5 rounded-[50px] font-semibold backdrop-blur-sm transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 border-2 w-full sm:w-auto
+                    ${isDarkMode 
+                      ? 'bg-[#181f38]/60 text-white !border-[#181f38] hover:bg-blue-600 hover:border-blue-600' 
+                      : 'bg-white/80 text-gray-700 border-gray-200 hover:bg-blue-600 hover:text-white hover:border-blue-600'
+                      }`}
+                      >
+                        <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
+                        {t.hero.pricing}
+                        </Button>
                  </motion.div>
               </motion.div>
             </div>
@@ -746,30 +1030,36 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 relative">
-        <div className="container mx-auto px-6 relative z-10">
+      <section id="services" className="py-12 md:py-20 relative">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 transition-colors duration-300 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              Наши услуги
+              {t.services.title}
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+            <p className={`text-lg md:text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 px-4 ${
               isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
             }`}>
-              Профессиональная помощь студентам во всех видах академических работ
+              {t.services.subtitle}
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {/* Mobile: Swipeable single card */}
+          <div className="md:hidden max-w-sm mx-auto">
+            <ServiceCardSwiper isDarkMode={isDarkMode} />
+          </div>
+
+          {/* Desktop: Grid layout */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             <motion.div 
-              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+              className={`backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
                 isDarkMode 
                   ? 'bg-[#181f38]/60 border-[#181f38]/40' 
                   : 'bg-white/60 border-white/40'
@@ -780,31 +1070,31 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               {/* Image placeholder */}
-              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+              <div className={`relative w-full h-32 md:h-40 mb-3 md:mb-4 rounded-xl md:rounded-2xl overflow-hidden ${
                 isDarkMode ? 'bg-[#101831]' : 'bg-white'
               }`}>
-                <img src="/card1.png" alt="Рефераты" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div></div>'; } }} />
+                <img src="/card1.png" alt="Рефераты" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center"><svg class="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                <h3 className={`text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors duration-300 ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>Рефераты</h3>
-                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                }`}>{t.services.essay.title}</h3>
+                <p className={`mb-3 md:mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
                 }`}>
-                  Качественные рефераты по любым предметам с уникальностью 90%+
+                  {t.services.essay.description}
                 </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-blue-100'} text-blue-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 500 руб.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>10-20 стр.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
+                <div className="flex flex-wrap gap-1.5 md:gap-2 mt-auto">
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-blue-100'} text-blue-800 text-xs font-semibold px-2 md:px-3 py-1 rounded-full`}>{t.services.essay.from}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.essay.pages}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.essay.time}</span>
                 </div>
               </div>
             </motion.div>
             
             <motion.div 
-              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+              className={`backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
                 isDarkMode 
                   ? 'bg-[#181f38]/60 border-[#181f38]/40' 
                   : 'bg-white/60 border-white/40'
@@ -815,31 +1105,31 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               {/* Image placeholder */}
-              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+              <div className={`relative w-full h-32 md:h-40 mb-3 md:mb-4 rounded-xl md:rounded-2xl overflow-hidden ${
                 isDarkMode ? 'bg-[#101831]' : 'bg-white'
               }`}>
-                <img src="/card2.png" alt="Курсовые работы" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div></div>'; } }} />
+                <img src="/card2.png" alt="Курсовые работы" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-purple-500 to-pink-400 rounded-2xl flex items-center justify-center"><svg class="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                <h3 className={`text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors duration-300 ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>Курсовые работы</h3>
-                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                }`}>{t.services.coursework.title}</h3>
+                <p className={`mb-3 md:mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
                 }`}>
-                  Серьезные исследовательские работы с глубоким анализом темы
+                  {t.services.coursework.description}
                 </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-purple-100'} text-purple-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 1500 руб.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>30-50 стр.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
+                <div className="flex flex-wrap gap-1.5 md:gap-2 mt-auto">
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-purple-100'} text-purple-800 text-xs font-semibold px-2 md:px-3 py-1 rounded-full`}>{t.services.coursework.from}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.coursework.pages}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.coursework.time}</span>
                 </div>
               </div>
             </motion.div>
             
             <motion.div 
-              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+              className={`backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
                 isDarkMode 
                   ? 'bg-[#181f38]/60 border-[#181f38]/40' 
                   : 'bg-white/60 border-white/40'
@@ -850,31 +1140,31 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               {/* Image placeholder */}
-              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+              <div className={`relative w-full h-32 md:h-40 mb-3 md:mb-4 rounded-xl md:rounded-2xl overflow-hidden ${
                 isDarkMode ? 'bg-[#101831]' : 'bg-white'
               }`}>
-                <img src="/card3.png" alt="СРС" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg></div></div>'; } }} />
+                <img src="/card3.png" alt="СРС" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-emerald-400 rounded-2xl flex items-center justify-center"><svg class="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                <h3 className={`text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors duration-300 ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>СРС</h3>
-                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                }`}>{t.services.srs.title}</h3>
+                <p className={`mb-3 md:mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
                 }`}>
-                  Самостоятельные работы студентов любой сложности
+                  {t.services.srs.description}
                 </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 300 руб.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>5-15 стр.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
+                <div className="flex flex-wrap gap-1.5 md:gap-2 mt-auto">
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-800 text-xs font-semibold px-2 md:px-3 py-1 rounded-full`}>{t.services.srs.from}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.srs.pages}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.srs.time}</span>
                 </div>
               </div>
             </motion.div>
             
             <motion.div 
-              className={`backdrop-blur-sm rounded-3xl p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
+              className={`backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-lg border transition-all duration-300 flex flex-col h-full ${
                 isDarkMode 
                   ? 'bg-[#181f38]/60 border-[#181f38]/40' 
                   : 'bg-white/60 border-white/40'
@@ -885,25 +1175,25 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               {/* Image placeholder */}
-              <div className={`relative w-full h-40 mb-4 rounded-2xl overflow-hidden ${
+              <div className={`relative w-full h-32 md:h-40 mb-3 md:mb-4 rounded-xl md:rounded-2xl overflow-hidden ${
                 isDarkMode ? 'bg-[#101831]' : 'bg-white'
               }`}>
-                <img src="/card4.png" alt="Доклады" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-400 rounded-2xl flex items-center justify-center"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div></div>'; } }} />
+                <img src="/card4.png" alt="Доклады" className="w-full h-full object-contain" onError={(e) => { if (e.currentTarget.parentElement) { e.currentTarget.parentElement.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-white"><div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-orange-500 to-red-400 rounded-2xl flex items-center justify-center"><svg class="h-6 w-6 md:h-8 md:w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div></div>'; } }} />
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
+                <h3 className={`text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors duration-300 ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>Доклады</h3>
-                <p className={`mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
+                }`}>{t.services.presentation.title}</h3>
+                <p className={`mb-3 md:mb-4 leading-relaxed flex-1 text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
                 }`}>
-                  Презентации и доклады для выступлений на семинарах
+                  {t.services.presentation.description}
                 </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-orange-100'} text-orange-800 text-xs font-semibold px-3 py-1 rounded-full`}>От 400 руб.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-3 py-1 rounded-full`}>5-10 стр.</span>
-                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-3 py-1 rounded-full`}>3 мин</span>
+                <div className="flex flex-wrap gap-1.5 md:gap-2 mt-auto">
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-orange-100'} text-orange-800 text-xs font-semibold px-2 md:px-3 py-1 rounded-full`}>{t.services.presentation.from}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-gray-100'} text-gray-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.presentation.pages}</span>
+                  <span className={`${isDarkMode ? 'bg-[#050c26]' : 'bg-green-100'} text-green-700 text-xs font-medium px-2 md:px-3 py-1 rounded-full`}>{t.services.presentation.time}</span>
                 </div>
               </div>
             </motion.div>
@@ -912,112 +1202,110 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="process" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+      <section id="process" className={`py-12 md:py-20 relative overflow-hidden transition-colors duration-300 ${
         isDarkMode 
           ? 'bg-[#050c26]' 
           : 'bg-gradient-to-r from-blue-50 to-purple-50'
       }`}>
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 transition-colors duration-300 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              Как это работает
+              {t.howItWorks.title}
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+            <p className={`text-lg md:text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 px-4 ${
               isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
             }`}>
-              Получите потрясающие студенческие работы всего за 3 простых шага
+              {t.howItWorks.subtitle}
             </p>
           </motion.div>
           
           {/* Main Content Block */}
-          <div className={`relative backdrop-blur-xl rounded-3xl shadow-lg overflow-visible max-w-7xl mx-auto border ${
+          <div className={`relative backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg overflow-visible max-w-7xl mx-auto border ${
             isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
           }`}>
             <div className="flex flex-col lg:flex-row items-stretch">
               {/* Left side - Steps */}
               <motion.div 
-                className="basis-3/5 p-6 lg:p-8 flex flex-col justify-center"
+                className="basis-full lg:basis-3/5 p-4 md:p-6 lg:p-8 flex flex-col justify-center"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <div className="space-y-4">
+                <div className="space-y-4 md:space-y-6">
                   {/* Step 1 */}
                   <motion.div 
-                    className="flex items-start gap-6 group"
+                    className="flex items-start gap-3 md:gap-6 group"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.1 }}
                   >
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                         01
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className={`text-[20px] font-bold mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-blue-600`}>
-                        Введите требования
+                      <h3 className={`text-lg md:text-[20px] font-bold mb-2 md:mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-blue-600`}>
+                        {t.howItWorks.step1.title}
                       </h3>
-                      <p className={`leading-relaxed text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                        Опишите тему работы, укажите количество страниц, тип работы и особые требования. 
-                        Наш ИИ проанализирует ваш запрос и создаст план работы.
+                      <p className={`leading-relaxed text-sm md:text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                        {t.howItWorks.step1.description}
                       </p>
                     </div>
                   </motion.div>
                   
                   {/* Step 2 */}
                   <motion.div 
-                    className="flex items-start gap-6 group"
+                    className="flex items-start gap-3 md:gap-6 group"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                   >
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                         02
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className={`text-[20px] font-bold mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-purple-600`}>
-                        Подтвердите план
+                      <h3 className={`text-lg md:text-[20px] font-bold mb-2 md:mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-purple-600`}>
+                        {t.howItWorks.step2.title}
                       </h3>
-                      <p className={`leading-relaxed text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                        Подтвердите план работы и оплатите заказ. Наш сервис сделает работу за 3 минуты.
+                      <p className={`leading-relaxed text-sm md:text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                        {t.howItWorks.step2.description}
                       </p>
                     </div>
                   </motion.div>
                   
                   {/* Step 3 */}
                   <motion.div 
-                    className="flex items-start gap-6 group"
+                    className="flex items-start gap-3 md:gap-6 group"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.3 }}
                   >
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                         03
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className={`text-[20px] font-bold mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-green-600`}>
-                        Скачайте работу
+                      <h3 className={`text-lg md:text-[20px] font-bold mb-2 md:mb-3 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'} group-hover:text-green-600`}>
+                        {t.howItWorks.step3.title}
                       </h3>
-                      <p className={`leading-relaxed text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                        Получите готовую работу высочайшего качества в формате Word с гарантией уникальности. 
-                        Наслаждайтесь отличными оценками и свободным временем!
+                      <p className={`leading-relaxed text-sm md:text-[14px] transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                        {t.howItWorks.step3.description}
                       </p>
                     </div>
                   </motion.div>
@@ -1026,7 +1314,7 @@ export default function Home() {
               
               {/* Right side - Image extending out */}
               <motion.div 
-                className="basis-2/5 relative flex items-end justify-center lg:justify-end overflow-visible"
+                className="hidden lg:flex basis-2/5 relative items-end justify-center lg:justify-end overflow-visible"
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -1058,30 +1346,123 @@ export default function Home() {
       </section>
 
       {/* Benefits */}
-      <section id="benefits" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+      <section id="benefits" className={`py-12 md:py-20 relative overflow-hidden transition-colors duration-300 ${
         isDarkMode ? 'bg-[#050c26]' : 'bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50'
       }`}>
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           {/* Header */}
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Почему выбирают нас
+            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              {t.benefits.title}
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-              Преимущества, которые делают нас лучшими
+            <p className={`text-lg md:text-xl max-w-3xl mx-auto leading-relaxed transition-colors px-4 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+              {t.benefits.subtitle}
             </p>
           </motion.div>
           
           {/* Main content container */}
           <div className="relative">
-            {/* Background cards - positioned behind image in orderly grid */}
-            <div className="absolute inset-0 w-full h-full pointer-events-none">
+            {/* Mobile cards - stacked layout */}
+            <div className="lg:hidden space-y-4">
+              <motion.div 
+                className={`backdrop-blur-sm rounded-xl p-4 shadow-lg border flex items-center gap-3 transition-colors ${
+                  isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                }`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Zap className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.speed.title}</div>
+                  <div className={`text-xs transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.speed.subtitle}</div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className={`backdrop-blur-sm rounded-xl p-4 shadow-lg border flex items-center gap-3 transition-colors ${
+                  isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                }`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Shield className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.quality.title}</div>
+                  <div className={`text-xs transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.quality.subtitle}</div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className={`backdrop-blur-sm rounded-xl p-4 shadow-lg border flex items-center gap-3 transition-colors ${
+                  isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                }`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Award className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.uniqueness.title}</div>
+                  <div className={`text-xs transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.uniqueness.subtitle}</div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className={`backdrop-blur-sm rounded-xl p-4 shadow-lg border flex items-center gap-3 transition-colors ${
+                  isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                }`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Heart className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.support.title}</div>
+                  <div className={`text-xs transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.support.subtitle}</div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className={`backdrop-blur-sm rounded-xl p-4 shadow-lg border flex items-center gap-3 transition-colors ${
+                  isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/80 border-white/40'
+                }`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Star className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.pricing.title}</div>
+                  <div className={`text-xs transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.pricing.subtitle}</div>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Desktop cards - positioned behind image in orderly grid */}
+            <div className="hidden lg:block absolute inset-0 w-full h-full pointer-events-none">
               {/* Top row cards - 2 horizontal cards */}
               <div className="flex justify-center items-start gap-90 absolute top-20 left-170 transform -translate-x-1/2 w-full max-w-4xl">
                 <motion.div 
@@ -1097,8 +1478,8 @@ export default function Home() {
                     <Zap className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Скорость</div>
-                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>За 3 минуты</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.speed.title}</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.speed.subtitle}</div>
                   </div>
                 </motion.div>
 
@@ -1115,8 +1496,8 @@ export default function Home() {
                     <Shield className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Качество</div>
-                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>100% гарантия</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.quality.title}</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.quality.subtitle}</div>
                   </div>
                 </motion.div>
               </div>
@@ -1136,8 +1517,8 @@ export default function Home() {
                     <Award className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Уникальность</div>
-                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>90%+</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.uniqueness.title}</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.uniqueness.subtitle}</div>
                   </div>
                 </motion.div>
 
@@ -1154,8 +1535,8 @@ export default function Home() {
                     <Heart className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Поддержка</div>
-                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>24/7</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.support.title}</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.support.subtitle}</div>
                   </div>
                 </motion.div>
               </div>
@@ -1175,16 +1556,16 @@ export default function Home() {
                     <Star className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Доступные цены</div>
-                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>Без переплат</div>
+                    <div className={`text-base font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.benefits.pricing.title}</div>
+                    <div className={`text-sm transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-500'}`}>{t.benefits.pricing.subtitle}</div>
                   </div>
                 </motion.div>
               </div>
             </div>
 
-            {/* Central image container */}
+            {/* Central image container - desktop only */}
             <motion.div 
-              className="relative flex justify-center items-center min-h-[500px] z-20"
+              className="hidden lg:flex relative justify-center items-center min-h-[500px] z-20"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -1214,10 +1595,10 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section id="reviews" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+      <section id="reviews" className={`py-12 md:py-20 relative overflow-hidden transition-colors duration-300 ${
         isDarkMode ? 'bg-[#050c26]' : 'bg-gradient-to-r from-purple-50 to-blue-50'
       }`}>
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           {/* Background graphic */}
           <div className={`absolute inset-0 w-full h-full pointer-events-none ${isDarkMode ? 'opacity-0' : 'opacity-30'}` }>
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full blur-3xl"></div>
@@ -1225,19 +1606,19 @@ export default function Home() {
           
           <div className="max-w-7xl mx-auto relative">
             <motion.div 
-              className="text-center mb-16"
+              className="text-center mb-12 md:mb-16"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Студенты любят то, что мы делаем
+              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                {t.testimonials.title}
               </h2>
-              <div className="mb-6"></div>
-              <div className="max-w-3xl mx-auto mb-4">
-                <p className={`text-xl transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                  Воспользуйтесь подлинными отзывами и укрепите доверие с помощью отзывов, которые имеют значение. 
+              <div className="mb-4 md:mb-6"></div>
+              <div className="max-w-3xl mx-auto mb-4 px-4">
+                <p className={`text-lg md:text-xl transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                  {t.testimonials.subtitle}
                 </p>
               </div>
             </motion.div>
@@ -1249,23 +1630,23 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className={`py-20 relative overflow-hidden transition-colors duration-300 ${
+      <section id="faq" className={`py-12 md:py-20 relative overflow-hidden transition-colors duration-300 ${
         isDarkMode ? 'bg-[#050c26]' : 'bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50'
       }`}>
-        <div className="max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <div className="max-w-7xl px-4 py-6 md:py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           {/* Title */}
           <motion.div 
-            className="max-w-4xl mx-auto text-center mb-10 lg:mb-14"
+            className="max-w-4xl mx-auto text-center mb-8 md:mb-10 lg:mb-14"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Ваши вопросы — наши ответы
+            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              {t.faq.title}
             </h2>
-            <p className={`text-xl leading-relaxed transition-colors ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-              Узнайте всё о StudAI: от возможностей до гарантий качества
+            <p className={`text-lg md:text-xl leading-relaxed transition-colors px-4 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+              {t.faq.subtitle}
             </p>
           </motion.div>
           {/* End Title */}
@@ -1276,54 +1657,52 @@ export default function Home() {
       {/* End FAQ */}
 
       {/* Ready to get your work section - outside container */}
-      <div data-test-id="help-container" className="container mx-auto px-22 my-20">
-        <section className={`backdrop-blur-sm rounded-3xl shadow-lg overflow-visible relative mx-12 md:mx-8 lg:mx-12 border ${
+      <div data-test-id="help-container" className="container mx-auto px-4 md:px-6 my-12 md:my-20">
+        <section className={`backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-lg overflow-visible relative mx-2 md:mx-8 lg:mx-12 border ${
           isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/40' : 'bg-white/60 border-white/40'
         }`}>
-          <div className="relative" style={{ height: "424px" }}>
-            <div className="flex items-center h-full">
+          <div className="relative md:!h-[424px]" style={{ minHeight: "160px" }}>
+            <div className="flex flex-col lg:flex-row items-center lg:items-center h-full">
               {/* Left content */}
               <motion.div 
-                className="flex-1 px-18 py-6"
+                className="flex-1 px-4 md:px-8 lg:px-18 py-3 md:py-4 text-center lg:text-left"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                <h2 className={`text-3xl md:text-4xl font-bold mb-6 leading-tight transition-colors ${
+                <h2 className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 leading-tight transition-colors ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
-                  Готовы заказать <br />
-                  свою работу?
+                  {t.ready.title}
                 </h2>
                 
-                <div className="mb-8">
-                  <p className={`text-lg leading-relaxed transition-colors ${
+                <div className="mb-6 md:mb-8">
+                  <p className={`text-base md:text-lg leading-relaxed transition-colors ${
                     isDarkMode ? 'text-[#78819d]' : 'text-gray-600'
                   }`}>
-                    StudAI поможет вам создать качественную работу за считанные минуты. <br />
-                    Рефераты, курсовые, СРС и доклады с гарантией уникальности 90%+.
+                    {t.ready.subtitle}
                   </p>
                 </div>
                 
-                <div className="flex items-center">
+                <div className="flex justify-center lg:justify-start items-center">
                   <motion.div 
                     whileHover={{ scale: 1.05 }} 
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button 
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg flex items-center gap-2 md:gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
-                      <FileText className="h-6 w-6" />
-                      <span className="border-l border-white/30 pl-3 ml-3">Сделать заказ</span>
+                      <FileText className="h-5 w-5 md:h-6 md:w-6" />
+                      <span className="border-l border-white/30 pl-2 md:pl-3 ml-2 md:ml-3">{t.ready.createOrder}</span>
                     </Button>
                   </motion.div>
                 </div>
               </motion.div>
               
-              {/* Right image - overflowing from top */}
+              {/* Right image - overflowing from top - hidden on mobile */}
               <motion.div 
-                className="flex-shrink-0 relative ml-18 mr-12"
+                className="hidden lg:flex flex-shrink-0 relative ml-18 mr-12"
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -1351,18 +1730,18 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className={`backdrop-blur-xl py-16 relative border-t transition-colors ${
+      <footer className={`backdrop-blur-xl py-12 md:py-16 relative border-t transition-colors ${
         isDarkMode ? 'bg-[#181f38]/80 border-[#181f38]/30 text-[#78819d]' : 'bg-white/80 border-white/20 text-gray-700'
       }`}>
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
             {/* Company Info */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center space-x-3 mb-6">
+            <div className="col-span-2 lg:col-span-2">
+              <div className="flex items-center space-x-2 md:space-x-3 mb-4 md:mb-6">
                 <img 
                   src={isDarkMode ? "/studai-logo-white.svg" : "/studai-logo.svg"} 
                   alt="StudAI Logo" 
-                  className="w-10 h-10 relative -top-0.75"
+                  className="w-8 h-8 md:w-10 md:h-10 relative -top-0.75"
                   onError={(e) => {
                     const target = e.currentTarget as HTMLImageElement;
                     target.style.display = 'none';
@@ -1372,25 +1751,24 @@ export default function Home() {
                     }
                   }}
                 />
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
-                  <GraduationCap className="h-6 w-6 text-white" />
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center hidden">
+                  <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-blue-600'}`}>StudAI</span>
+                <span className={`text-xl md:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-blue-600'}`}>StudAI</span>
               </div>
-              <p className={`leading-relaxed mb-6 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                Современный сервис для создания студенческих работ с помощью искусственного интеллекта. 
-                Качественные рефераты, курсовые, СРС и доклады за 3 минуты.
+              <p className={`leading-relaxed mb-4 md:mb-6 text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                {t.footer.description}
               </p>
               
               {/* Social Media */}
-              <div className="flex space-x-4">
+              <div className="flex space-x-3 md:space-x-4">
                 <a 
                   href="https://instagram.com/studai.kg" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center text-white hover:scale-105 transition-transform duration-300"
+                  className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center text-white hover:scale-105 transition-transform duration-300"
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                   </svg>
                 </a>
@@ -1398,9 +1776,9 @@ export default function Home() {
                   href="https://wa.me/996555123456" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white hover:scale-105 transition-transform duration-300"
+                  className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white hover:scale-105 transition-transform duration-300"
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.520-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
                   </svg>
                 </a>
@@ -1409,57 +1787,61 @@ export default function Home() {
             
             {/* Services */}
             <div>
-              <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Услуги</h3>
-              <ul className={`space-y-3 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Рефераты</a></li>
-                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Курсовые работы</a></li>
-                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>СРС</a></li>
-                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Доклады</a></li>
-                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Презентации</a></li>
+              <h3 className={`text-base md:text-lg font-bold mb-4 md:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.footer.services}</h3>
+              <ul className={`space-y-2 md:space-y-3 text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.servicesLinks.essays}</a></li>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.servicesLinks.coursework}</a></li>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.servicesLinks.srs}</a></li>
+                <li><a href="#services" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.servicesLinks.reports}</a></li>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.servicesLinks.presentations}</a></li>
               </ul>
             </div>
             
             {/* Company */}
             <div>
-              <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Компания</h3>
-              <ul className={`space-y-3 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
-                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>О нас</a></li>
-                <li><a href="#reviews" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Отзывы</a></li>
-                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Гарантии</a></li>
-                <li><a href="#faq" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>FAQ</a></li>
-                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Поддержка</a></li>
+              <h3 className={`text-base md:text-lg font-bold mb-4 md:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.footer.company}</h3>
+              <ul className={`space-y-2 md:space-y-3 text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.companyLinks.about}</a></li>
+                <li><a href="#reviews" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.companyLinks.reviews}</a></li>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.companyLinks.guarantees}</a></li>
+                <li><a href="#faq" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.companyLinks.faq}</a></li>
+                <li><a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>{t.footer.companyLinks.support}</a></li>
               </ul>
             </div>
             
             {/* Contact */}
             <div>
-              <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Контакты</h3>
-              <div className={`space-y-4 ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
+              <h3 className={`text-base md:text-lg font-bold mb-4 md:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{t.footer.contact}</h3>
+              <div className={`space-y-3 md:space-y-4 text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-gray-600'}`}>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3 text-blue-600" />
+                  <Phone className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-blue-600" />
                   <a href="tel:+996555123456" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>
                     +996 555 123 456
                   </a>
                 </div>
                 <div className="flex items-center">
-                  <Mail className="h-5 w-5 mr-3 text-blue-600" />
+                  <Mail className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-blue-600" />
                   <a href="mailto:info@studai.kg" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>
                     info@studai.kg
                   </a>
                 </div>
                 <div className="flex items-center">
-                  <MapPin className="h-5 w-5 mr-3 text-blue-600" />
+                  <MapPin className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-blue-600" />
                   <span>Бишкек, Кыргызстан</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className={`border-t mt-12 pt-8 flex flex-col md:flex-row justify_between items-center ${isDarkMode ? 'border-[#181f38]/40 text-[#78819d]' : 'border-gray-200 text-gray-500'}`}>
-            <p>&copy; 2025 StudAI. Все права защищены.</p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Политика конфиденциальности</a>
-              <a href="#" className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>Условия использования</a>
+          <div className={`border-t mt-8 md:mt-12 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-start md:items-center ${isDarkMode ? 'border-[#181f38]/40 text-[#78819d]' : 'border-gray-200 text-gray-500'}`}>
+            <p className="text-sm md:text-base mb-3 md:mb-0">{t.footer.copyright}</p>
+            <div className="flex space-x-4 md:space-x-6">
+              <a href="#" className={`text-sm md:text-base transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>
+                {t.footer.privacy}
+              </a>
+              <a href="#" className={`text-sm md:text-base transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-blue-600'}`}>
+                {t.footer.terms}
+              </a>
             </div>
           </div>
         </div>

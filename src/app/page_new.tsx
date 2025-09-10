@@ -249,7 +249,7 @@ export default function Home() {
                     Качественные рефераты по любым предметам с уникальностью 90%+
                   </p>
                   <div className="flex flex-wrap gap-2 mt-auto">
-                    <span className="bg-cyan-400/20 text-cyan-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-cyan-400/30">От 500 руб.</span>
+                    <span className="bg-cyan-400/20 text-cyan-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-cyan-400/30">От 500 сом</span>
                     <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">10-20 стр.</span>
                     <span className="bg-green-400/20 text-green-200 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-green-400/30">3 мин</span>
                   </div>
@@ -270,7 +270,7 @@ export default function Home() {
                     Серьезные исследовательские работы с глубоким анализом темы
                   </p>
                   <div className="flex flex-wrap gap-2 mt-auto">
-                    <span className="bg-purple-400/20 text-purple-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-purple-400/30">От 1500 руб.</span>
+                    <span className="bg-purple-400/20 text-purple-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-purple-400/30">От 1500 сом</span>
                     <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">30-50 стр.</span>
                     <span className="bg-green-400/20 text-green-200 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-green-400/30">3 мин</span>
                   </div>
@@ -291,7 +291,7 @@ export default function Home() {
                     Самостоятельные работы студентов любой сложности
                   </p>
                   <div className="flex flex-wrap gap-2 mt-auto">
-                    <span className="bg-green-400/20 text-green-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-green-400/30">От 300 руб.</span>
+                    <span className="bg-green-400/20 text-green-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-green-400/30">От 300 сом</span>
                     <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">5-15 стр.</span>
                     <span className="bg-green-400/20 text-green-200 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-green-400/30">3 мин</span>
                   </div>
@@ -312,7 +312,7 @@ export default function Home() {
                     Презентации и доклады для выступлений на семинарах
                   </p>
                   <div className="flex flex-wrap gap-2 mt-auto">
-                    <span className="bg-orange-400/20 text-orange-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-orange-400/30">От 400 руб.</span>
+                    <span className="bg-orange-400/20 text-orange-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm border border-orange-400/30">От 400 сом</span>
                     <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">5-10 стр.</span>
                     <span className="bg-green-400/20 text-green-200 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-green-400/30">3 мин</span>
                   </div>
