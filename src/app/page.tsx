@@ -27,6 +27,9 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getTranslation } from '@/translations'
 import LanguageSelector from '@/components/LanguageSelector'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 // Функция для получения отзывов из переводов
 const getTestimonials = (t: any) => [
@@ -651,6 +654,47 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { language, isClient } = useLanguage();
   const t = getTranslation(language);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Редирект авторизованных пользователей в дашборд
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/dashboard');
+    }
+  }, [session, status, router]);
+
+  // Функции для работы с темой в куки
+  const setThemeCookie = (isDark: boolean) => {
+    if (typeof window !== 'undefined') {
+      const expires = new Date()
+      expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000)) // 365 дней
+      document.cookie = `studai-theme=${isDark ? 'dark' : 'light'};expires=${expires.toUTCString()};path=/`
+    }
+  }
+
+  const getThemeCookie = (): boolean => {
+    if (typeof window !== 'undefined') {
+      const nameEQ = "studai-theme="
+      const ca = document.cookie.split(';')
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i]
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length)
+        if (c.indexOf(nameEQ) === 0) {
+          return c.substring(nameEQ.length, c.length) === 'dark'
+        }
+      }
+    }
+    return false
+  }
+
+  // Загружаем тему из куки при инициализации
+  useEffect(() => {
+    if (isClient) {
+      const savedTheme = getThemeCookie()
+      setIsDarkMode(savedTheme)
+    }
+  }, [isClient])
   
   
   
@@ -671,7 +715,10 @@ export default function Home() {
     <div className="switchWrapper--1eo4">
       <div 
         className={`pointer icon--2r1-plus -mr-4 ${isDarkMode ? 'isActive--ihJ-' : ''}`}
-        onClick={() => setIsDarkMode(true)}
+        onClick={() => {
+          setIsDarkMode(true)
+          setThemeCookie(true)
+        }}
       >
         <div className="wrapper wrapper__svg-is-inherit" style={{width:'24px',height:'24px'}} data-v-411017c9="">
           <svg data-v-411017c9="" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
@@ -681,7 +728,10 @@ export default function Home() {
       </div>
       <div 
         className={`pointer icon--2r1-plus ${!isDarkMode ? 'isActive--ihJ-' : ''}`}
-        onClick={() => setIsDarkMode(false)}
+        onClick={() => {
+          setIsDarkMode(false)
+          setThemeCookie(false)
+        }}
       >
         <div className="wrapper wrapper__svg-is-inherit" style={{width:'24px',height:'24px'}} data-v-411017c9="">
           <svg data-v-411017c9="" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
@@ -783,19 +833,52 @@ export default function Home() {
           <div className="flex items-center space-x-2 md:space-x-4">
             <LanguageSelector isDarkMode={isDarkMode} />
             <ThemeToggle />
-            <a href="#" className={`hidden sm:block font-bold transition-colors text-sm md:text-base ${
-              isDarkMode 
-                ? 'text-white hover:text-blue-600' 
-                : 'text-black hover:text-blue-600'
-            }`}>
-              {t.nav.login}
-            </a>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-6 py-2 rounded-full font-semibold shadow-lg text-sm md:text-base">
-                <span className="hidden sm:inline">{t.nav.createAccount}</span>
-                <span className="sm:hidden">Начать</span>
-              </Button>
-            </motion.div>
+            
+            {session ? (
+              <div className="flex items-center space-x-2 md:space-x-4">
+                <Link 
+                  href="/profile" 
+                  className={`hidden sm:block font-bold transition-colors text-sm md:text-base ${
+                    isDarkMode 
+                      ? 'text-white hover:text-blue-600' 
+                      : 'text-black hover:text-blue-600'
+                  }`}
+                >
+                  {t.auth.profile.title}
+                </Link>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button 
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    variant="outline"
+                    className="px-3 md:px-6 py-2 rounded-full font-semibold shadow-lg text-sm md:text-base"
+                  >
+                    <span className="hidden sm:inline">{t.auth.profile.signOut}</span>
+                    <span className="sm:hidden">Выйти</span>
+                  </Button>
+                </motion.div>
+              </div>
+            ) : (
+              <>
+                <Link 
+                  href="/auth/signin" 
+                  className={`hidden sm:block font-bold transition-colors text-sm md:text-base ${
+                    isDarkMode 
+                      ? 'text-white hover:text-blue-600' 
+                      : 'text-black hover:text-blue-600'
+                  }`}
+                >
+                  {t.nav.login}
+                </Link>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link href="/auth/signup">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-6 py-2 rounded-full font-semibold shadow-lg text-sm md:text-base">
+                      <span className="hidden sm:inline">{t.nav.createAccount}</span>
+                      <span className="sm:hidden">{t.nav.start}</span>
+                    </Button>
+                  </Link>
+                </motion.div>
+              </>
+            )}
           </div>
         </motion.div>
       </header>
@@ -993,12 +1076,14 @@ export default function Home() {
                    whileTap={{ scale: 0.95 }}
                    className="group w-full sm:w-auto"
                  >
-                   <Button 
-                     className="text-base md:text-lg px-8 md:px-12 py-4 md:py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-[50px] font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto"
-                   >
-                     <FileText className="h-4 w-4 md:h-5 md:w-5" />
-                     {t.hero.createWork}
-                   </Button>
+                   <Link href="/auth/signup">
+                     <Button 
+                       className="text-base md:text-lg px-8 md:px-12 py-4 md:py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-[50px] font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto"
+                     >
+                       <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                       {t.hero.createWork}
+                     </Button>
+                   </Link>
                  </motion.div>
                  
                  <motion.div 
@@ -1690,12 +1775,14 @@ export default function Home() {
                     whileHover={{ scale: 1.05 }} 
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Button 
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg flex items-center gap-2 md:gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <FileText className="h-5 w-5 md:h-6 md:w-6" />
-                      <span className="border-l border-white/30 pl-2 md:pl-3 ml-2 md:ml-3">{t.ready.createOrder}</span>
-                    </Button>
+                    <Link href="/auth/signup">
+                      <Button 
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg flex items-center gap-2 md:gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        <FileText className="h-5 w-5 md:h-6 md:w-6" />
+                        <span className="border-l border-white/30 pl-2 md:pl-3 ml-2 md:ml-3">{t.ready.createOrder}</span>
+                      </Button>
+                    </Link>
                   </motion.div>
                 </div>
               </motion.div>

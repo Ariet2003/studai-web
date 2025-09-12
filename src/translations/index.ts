@@ -10,6 +10,269 @@ export interface Translations {
     faq: string
     login: string
     createAccount: string
+    start: string
+  }
+  
+  // Authentication
+  auth: {
+    // General
+    or: string
+    back: string
+    continue: string
+    loading: string
+    
+    // Sign In
+    signIn: {
+      title: string
+      subtitle: string
+      email: string
+      password: string
+      signInButton: string
+      forgotPassword: string
+      noAccount: string
+      signUp: string
+      withGoogle: string
+      twoFactorCode: string
+      twoFactorTitle: string
+      twoFactorSubtitle: string
+      backupCode: string
+      useBackupCode: string
+      useAuthenticator: string
+      verifyButton: string
+      // Placeholders
+      emailPlaceholder: string
+      passwordPlaceholder: string
+    }
+    
+    // Sign Up
+    signUp: {
+      title: string
+      subtitle: string
+      firstName: string
+      lastName: string
+      middleName: string
+      email: string
+      password: string
+      confirmPassword: string
+      signUpButton: string
+      hasAccount: string
+      signIn: string
+      withGoogle: string
+      termsAgreement: string
+      privacyPolicy: string
+      terms: string
+      // Placeholders
+      namePlaceholder: string
+      emailPlaceholder: string
+      passwordPlaceholder: string
+      confirmPasswordPlaceholder: string
+    }
+    
+    // Forgot Password
+    forgotPassword: {
+      title: string
+      subtitle: string
+      email: string
+      sendCodeButton: string
+      backToSignIn: string
+      // Placeholders
+      emailPlaceholder: string
+    }
+    
+    // Reset Password
+    resetPassword: {
+      title: string
+      subtitle: string
+      code: string
+      newPassword: string
+      confirmPassword: string
+      resetButton: string
+      resendText: string
+      resendCode: string
+      backToSignIn: string
+      // Placeholders
+      codePlaceholder: string
+      newPasswordPlaceholder: string
+      confirmPasswordPlaceholder: string
+    }
+    
+    // Two Factor Authentication
+    twoFactor: {
+      title: string
+      subtitle: string
+      setupTitle: string
+      setupSubtitle: string
+      scanQR: string
+      enterCode: string
+      enterCodePlaceholder: string
+      enableButton: string
+      disableButton: string
+      backupCodes: string
+      backupCodesSubtitle: string
+      saveBackupCodes: string
+      downloadBackupCodes: string
+    }
+    
+    // Messages
+    messages: {
+      // Success
+      registrationSuccess: string
+      emailVerified: string
+      twoFactorEnabled: string
+      twoFactorDisabled: string
+      passwordReset: string
+      
+      // Errors
+      invalidCredentials: string
+      userNotFound: string
+      emailAlreadyExists: string
+      passwordTooShort: string
+      passwordsDoNotMatch: string
+      invalidEmail: string
+      twoFactorRequired: string
+      invalid2FACode: string
+      emailNotVerified: string
+      accountNotFound: string
+      tokenExpired: string
+      invalidToken: string
+      serverError: string
+      
+      // Email verification
+      checkEmail: string
+      emailSent: string
+      verificationEmailSent: string
+    }
+    
+    // Toast Messages
+    toast: {
+      // Titles
+      titles: {
+        success: string
+        error: string
+        warning: string
+        info: string
+      }
+      // Success messages
+      success: {
+        registration: string
+        login: string
+        passwordReset: string
+        emailSent: string
+        codeVerified: string
+        passwordChanged: string
+        accountLinked: string
+        welcome: string
+      }
+      // Error messages
+      error: {
+        fillAllFields: string
+        invalidEmail: string
+        passwordTooShort: string
+        passwordsNotMatch: string
+        invalidCode: string
+        expiredCode: string
+        userNotFound: string
+        googleUser: string
+        serverError: string
+        registrationFailed: string
+        loginFailed: string
+        resetFailed: string
+        codeNotReceived: string
+        invalidCredentials: string
+        invalid2FACode: string
+        invalidEmailOrPassword: string
+        googleUserMessage: string
+        fillRequiredFields: string
+        enter2FACode: string
+        userExists: string
+        // Browser validation messages
+        fillThisField: string
+        enterValidEmail: string
+        passwordTooShortBrowser: string
+        passwordsMustMatch: string
+      }
+      // Warning messages
+      warning: {
+        googleSignIn: string
+        accountExists: string
+        googleUserWarning: string
+      }
+      // Info messages
+      info: {
+        twoFactorRequired: string
+        codeSent: string
+        checkEmail: string
+        twoFactorTitle: string
+        twoFactorMessage: string
+      }
+    }
+    
+    // Email verification
+    verifyEmail: {
+      title: string
+      subtitle: string
+      success: string
+      expired: string
+      invalid: string
+      resend: string
+    }
+    
+    // Verify Code Page
+    verifyCode: {
+      title: string
+      subtitle: string
+      codeLabel: string
+      codePlaceholder: string
+      verifyButton: string
+      resendText: string
+      resendButton: string
+      backToSignIn: string
+    }
+    
+    // Email Messages
+    email: {
+      registration: {
+        subject: string
+        title: string
+        message: string
+        codeValid: string
+        ignoreMessage: string
+      }
+      passwordReset: {
+        subject: string
+        title: string
+        message: string
+        codeValid: string
+        ignoreMessage: string
+      }
+      twoFactor: {
+        subject: string
+        title: string
+        scanMessage: string
+        manualMessage: string
+        saveMessage: string
+      }
+    }
+    
+    // Profile
+    profile: {
+      title: string
+      personalInfo: string
+      security: string
+      firstName: string
+      lastName: string
+      middleName: string
+      email: string
+      changePassword: string
+      currentPassword: string
+      newPassword: string
+      confirmNewPassword: string
+      twoFactorAuth: string
+      enable2FA: string
+      disable2FA: string
+      save: string
+      signOut: string
+    }
   }
   
   // Hero section
@@ -246,7 +509,258 @@ const russianTranslations: Translations = {
     reviews: 'Отзывы',
     faq: 'FAQ',
     login: 'Войти',
-    createAccount: 'Создать аккаунт'
+    createAccount: 'Создать аккаунт',
+    start: 'Начать'
+  },
+  auth: {
+    or: 'или',
+    back: 'Назад',
+    continue: 'Продолжить',
+    loading: 'Загрузка...',
+    
+    signIn: {
+      title: 'Вход в аккаунт',
+      subtitle: 'Добро пожаловать обратно! Введите ваши данные для входа.',
+      email: 'Email адрес',
+      password: 'Пароль',
+      signInButton: 'Войти',
+      forgotPassword: 'Забыли пароль?',
+      noAccount: 'Нет аккаунта?',
+      signUp: 'Зарегистрироваться',
+      withGoogle: 'Войти через Google',
+      twoFactorCode: 'Код двухфакторной аутентификации',
+      twoFactorTitle: 'Двухфакторная аутентификация',
+      twoFactorSubtitle: 'Введите код из вашего приложения аутентификатора',
+      backupCode: 'Резервный код',
+      useBackupCode: 'Использовать резервный код',
+      useAuthenticator: 'Использовать аутентификатор',
+      verifyButton: 'Подтвердить',
+      // Placeholders
+      emailPlaceholder: 'example@mail.com',
+      passwordPlaceholder: 'Введите пароль'
+    },
+    
+    signUp: {
+      title: 'Создание аккаунта',
+      subtitle: 'Создайте аккаунт, чтобы начать пользоваться StudAI',
+      firstName: 'Имя',
+      lastName: 'Фамилия',
+      middleName: 'Отчество (необязательно)',
+      email: 'Email адрес',
+      password: 'Пароль',
+      confirmPassword: 'Подтвердите пароль',
+      signUpButton: 'Зарегистрироваться',
+      hasAccount: 'Уже есть аккаунт?',
+      signIn: 'Войти',
+      withGoogle: 'Зарегистрироваться через Google',
+      termsAgreement: 'Я согласен с',
+      privacyPolicy: 'Политикой конфиденциальности',
+      terms: 'Условиями использования',
+      // Placeholders
+      namePlaceholder: 'Введите ваше полное имя',
+      emailPlaceholder: 'example@mail.com',
+      passwordPlaceholder: 'Минимум 6 символов',
+      confirmPasswordPlaceholder: 'Повторите пароль'
+    },
+    
+    // Forgot Password
+    forgotPassword: {
+      title: 'Забыли пароль?',
+      subtitle: 'Введите ваш email и мы отправим код для восстановления пароля',
+      email: 'Email адрес',
+      sendCodeButton: 'Отправить код',
+      backToSignIn: '← Вернуться к входу',
+      // Placeholders
+      emailPlaceholder: 'example@mail.com'
+    },
+    
+    // Reset Password
+    resetPassword: {
+      title: 'Сброс пароля',
+      subtitle: 'Мы отправили код на',
+      code: 'Введите код подтверждения',
+      newPassword: 'Новый пароль',
+      confirmPassword: 'Подтвердите пароль',
+      resetButton: 'Сбросить пароль',
+      resendText: 'Не получили код?',
+      resendCode: 'Отправить повторно',
+      backToSignIn: '← Вернуться к входу',
+      // Placeholders
+      codePlaceholder: '000000',
+      newPasswordPlaceholder: 'Минимум 6 символов',
+      confirmPasswordPlaceholder: 'Повторите пароль'
+    },
+    
+    twoFactor: {
+      title: 'Двухфакторная аутентификация',
+      subtitle: 'Защитите ваш аккаунт дополнительным уровнем безопасности',
+      setupTitle: 'Настройка двухфакторной аутентификации',
+      setupSubtitle: 'Отсканируйте QR-код с помощью приложения Google Authenticator',
+      scanQR: 'Отсканируйте QR-код',
+      enterCode: 'Введите код для подтверждения',
+      enterCodePlaceholder: 'Введите 6-значный код',
+      enableButton: 'Включить 2FA',
+      disableButton: 'Отключить 2FA',
+      backupCodes: 'Резервные коды',
+      backupCodesSubtitle: 'Сохраните эти коды в безопасном месте',
+      saveBackupCodes: 'Сохранить коды',
+      downloadBackupCodes: 'Скачать коды'
+    },
+    
+    messages: {
+      registrationSuccess: 'Регистрация прошла успешно! Проверьте email для подтверждения.',
+      emailVerified: 'Email успешно подтвержден!',
+      twoFactorEnabled: 'Двухфакторная аутентификация включена',
+      twoFactorDisabled: 'Двухфакторная аутентификация отключена',
+      passwordReset: 'Пароль успешно сброшен',
+      
+      invalidCredentials: 'Неверный email или пароль',
+      userNotFound: 'Пользователь не найден',
+      emailAlreadyExists: 'Пользователь с таким email уже существует',
+      passwordTooShort: 'Пароль должен содержать минимум 6 символов',
+      passwordsDoNotMatch: 'Пароли не совпадают',
+      invalidEmail: 'Неверный формат email',
+      twoFactorRequired: 'Требуется код двухфакторной аутентификации',
+      invalid2FACode: 'Неверный код двухфакторной аутентификации',
+      emailNotVerified: 'Email не подтвержден',
+      accountNotFound: 'Аккаунт не найден',
+      tokenExpired: 'Токен истек',
+      invalidToken: 'Недействительный токен',
+      serverError: 'Внутренняя ошибка сервера',
+      
+      checkEmail: 'Проверьте ваш email',
+      emailSent: 'Email отправлен',
+      verificationEmailSent: 'Email с подтверждением отправлен'
+    },
+    
+    // Toast Messages
+    toast: {
+      // Titles
+      titles: {
+        success: 'Успешно!',
+        error: 'Ошибка',
+        warning: 'Предупреждение',
+        info: 'Информация'
+      },
+      // Success messages
+      success: {
+        registration: 'Регистрация успешна!',
+        login: 'Вход выполнен!',
+        passwordReset: 'Пароль сброшен!',
+        emailSent: 'Email отправлен!',
+        codeVerified: 'Код подтвержден!',
+        passwordChanged: 'Пароль изменен!',
+        accountLinked: 'Аккаунт связан!',
+        welcome: 'Добро пожаловать!'
+      },
+      // Error messages
+      error: {
+        fillAllFields: 'Заполните все обязательные поля',
+        invalidEmail: 'Неверный формат email',
+        passwordTooShort: 'Пароль должен содержать минимум 6 символов',
+        passwordsNotMatch: 'Пароли не совпадают',
+        invalidCode: 'Неверный код',
+        expiredCode: 'Код истек',
+        userNotFound: 'Пользователь не найден',
+        googleUser: 'Этот аккаунт зарегистрирован через Google',
+        serverError: 'Внутренняя ошибка сервера',
+        registrationFailed: 'Ошибка регистрации',
+        loginFailed: 'Ошибка входа',
+        resetFailed: 'Ошибка сброса пароля',
+        codeNotReceived: 'Код не получен',
+        invalidCredentials: 'Неверные данные для входа',
+        invalid2FACode: 'Неверный код двухфакторной аутентификации',
+        invalidEmailOrPassword: 'Неверный email или пароль',
+        googleUserMessage: 'Этот аккаунт зарегистрирован через Google. Используйте кнопку "Войти через Google"',
+        fillRequiredFields: 'Заполните все обязательные поля',
+        enter2FACode: 'Введите код двухфакторной аутентификации',
+        userExists: 'Пользователь с таким email уже существует',
+        // Browser validation messages
+        fillThisField: 'Заполните это поле',
+        enterValidEmail: 'Введите корректный email адрес',
+        passwordTooShortBrowser: 'Пароль должен содержать минимум 6 символов',
+        passwordsMustMatch: 'Пароли должны совпадать'
+      },
+      // Warning messages
+      warning: {
+        googleSignIn: 'Вход через Google',
+        accountExists: 'Аккаунт уже существует',
+        googleUserWarning: 'Этот email уже зарегистрирован через Google. Используйте кнопку "Войти через Google"'
+      },
+      // Info messages
+      info: {
+        twoFactorRequired: 'Двухфакторная аутентификация',
+        codeSent: 'Код подтверждения отправлен на ваш email!',
+        checkEmail: 'Проверьте ваш email',
+        twoFactorTitle: 'Двухфакторная аутентификация',
+        twoFactorMessage: 'Введите код из вашего приложения-аутентификатора'
+      }
+    },
+    
+    verifyEmail: {
+      title: 'Подтверждение email',
+      subtitle: 'Мы отправили ссылку для подтверждения на ваш email',
+      success: 'Email успешно подтвержден!',
+      expired: 'Ссылка истекла',
+      invalid: 'Недействительная ссылка',
+      resend: 'Отправить повторно'
+    },
+    
+    // Verify Code Page
+    verifyCode: {
+      title: 'Подтвердите ваш email',
+      subtitle: 'Мы отправили 6-значный код на',
+      codeLabel: 'Введите код подтверждения',
+      codePlaceholder: '000000',
+      verifyButton: 'Подтвердить',
+      resendText: 'Не получили код?',
+      resendButton: 'Отправить повторно',
+      backToSignIn: '← Вернуться к входу'
+    },
+    
+    // Email Messages
+    email: {
+      registration: {
+        subject: 'Код подтверждения регистрации - StudAI',
+        title: 'Добро пожаловать в StudAI!',
+        message: 'Спасибо за регистрацию. Для завершения процесса введите код подтверждения ниже:',
+        codeValid: 'Код действителен в течение 10 минут.',
+        ignoreMessage: 'Если вы не регистрировались на StudAI, просто проигнорируйте это письмо.'
+      },
+      passwordReset: {
+        subject: 'Код восстановления пароля - StudAI',
+        title: 'Восстановление пароля',
+        message: 'Для восстановления пароля введите код подтверждения ниже:',
+        codeValid: 'Код действителен в течение 10 минут.',
+        ignoreMessage: 'Если вы не запрашивали восстановление пароля, просто проигнорируйте это письмо.'
+      },
+      twoFactor: {
+        subject: 'Настройка двухфакторной аутентификации - StudAI',
+        title: 'Настройка двухфакторной аутентификации',
+        scanMessage: 'Отсканируйте QR-код с помощью приложения Google Authenticator или Authy:',
+        manualMessage: 'Или введите этот секретный ключ вручную:',
+        saveMessage: 'Сохраните этот код в надежном месте - он понадобится для восстановления доступа.'
+      }
+    },
+    
+    profile: {
+      title: 'Профиль',
+      personalInfo: 'Личная информация',
+      security: 'Безопасность',
+      firstName: 'Имя',
+      lastName: 'Фамилия',
+      middleName: 'Отчество',
+      email: 'Email',
+      changePassword: 'Изменить пароль',
+      currentPassword: 'Текущий пароль',
+      newPassword: 'Новый пароль',
+      confirmNewPassword: 'Подтвердите новый пароль',
+      twoFactorAuth: 'Двухфакторная аутентификация',
+      enable2FA: 'Включить 2FA',
+      disable2FA: 'Отключить 2FA',
+      save: 'Сохранить',
+      signOut: 'Выйти'
+    }
   },
   hero: {
     badge: 'Лучший ИИ-помощник',
@@ -478,7 +992,258 @@ const kyrgyzTranslations: Translations = {
     reviews: 'Пикирлер',
     faq: 'Көп берилүүчү суроолор',
     login: 'Кирүү',
-    createAccount: 'Аккаунт түзүү'
+    createAccount: 'Аккаунт түзүү',
+    start: 'Баштоо'
+  },
+  auth: {
+    or: 'же',
+    back: 'Артка',
+    continue: 'Улантуу',
+    loading: 'Жүктөлүүдө...',
+    
+    signIn: {
+      title: 'Аккаунтка кирүү',
+      subtitle: 'Кайра кош келдиңиз! Кирүү үчүн маалыматтарыңызды киргизиңиз.',
+      email: 'Email дареги',
+      password: 'Сыр сөз',
+      signInButton: 'Кирүү',
+      forgotPassword: 'Сыр сөздү унуттуңузбу?',
+      noAccount: 'Аккаунт жокпу?',
+      signUp: 'Катталуу',
+      withGoogle: 'Google аркылуу кирүү',
+      twoFactorCode: 'Эки факторлук аутентификациянын коду',
+      twoFactorTitle: 'Эки факторлук аутентификация',
+      twoFactorSubtitle: 'Аутентификатор тиркемеңизден кодду киргизиңиз',
+      backupCode: 'Камдык код',
+      useBackupCode: 'Камдык кодду колдонуу',
+      useAuthenticator: 'Аутентификаторду колдонуу',
+      verifyButton: 'Ырастоо',
+      // Placeholders
+      emailPlaceholder: 'example@mail.com',
+      passwordPlaceholder: 'Сыр сөздү киргизиңиз'
+    },
+    
+    signUp: {
+      title: 'Аккаунт түзүү',
+      subtitle: 'StudAI колдонууну баштоо үчүн аккаунт түзүңүз',
+      firstName: 'Аты',
+      lastName: 'Фамилиясы',
+      middleName: 'Атасынын аты (милдеттүү эмес)',
+      email: 'Email дареги',
+      password: 'Сыр сөз',
+      confirmPassword: 'Сыр сөздү ырастаңыз',
+      signUpButton: 'Катталуу',
+      hasAccount: 'Аккаунт барбы?',
+      signIn: 'Кирүү',
+      withGoogle: 'Google аркылуу катталуу',
+      termsAgreement: 'Мен макулмун',
+      privacyPolicy: 'Купуялуулук саясаты',
+      terms: 'Колдонуу шарттары',
+      // Placeholders
+      namePlaceholder: 'Толук атыңызды киргизиңиз',
+      emailPlaceholder: 'example@mail.com',
+      passwordPlaceholder: 'Минимум 6 символ',
+      confirmPasswordPlaceholder: 'Сыр сөздү кайталаңыз'
+    },
+    
+    // Forgot Password
+    forgotPassword: {
+      title: 'Сыр сөздү унутуп калдыңызбы?',
+      subtitle: 'Email дарегиңизди киргизиңиз, биз сизге сыр сөздү калыбына келтирүү үчүн код жөнөтөбүз',
+      email: 'Email дареги',
+      sendCodeButton: 'Кодду жөнөтүү',
+      backToSignIn: '← Кирүүгө баракчасына кайтуу',
+      // Placeholders
+      emailPlaceholder: 'example@mail.com'
+    },
+    
+    // Reset Password
+    resetPassword: {
+      title: 'Сыр сөздү калыбына келтирүү',
+      subtitle: 'Биз кодду жөнөттүк',
+      code: 'Ырастоо кодун киргизиңиз',
+      newPassword: 'Жаңы сыр сөз',
+      confirmPassword: 'Сыр сөздү ырастаңыз',
+      resetButton: 'Сыр сөздү калыбына келтирүү',
+      resendText: 'Код барган жокпу?',
+      resendCode: 'Кайра жөнөтүү',
+      backToSignIn: '← Кирүүгө баракчасына кайтуу',
+      // Placeholders
+      codePlaceholder: '000000',
+      newPasswordPlaceholder: 'Минимум 6 символ',
+      confirmPasswordPlaceholder: 'Сыр сөздү кайталаңыз'
+    },
+    
+    twoFactor: {
+      title: 'Эки факторлук аутентификация',
+      subtitle: 'Аккаунтуңузду кошумча коопсуздук деңгээли менен коргоңуз',
+      setupTitle: 'Эки факторлук аутентификацияны жөндөө',
+      setupSubtitle: 'Google Authenticator тиркемеси менен QR-кодду скандаңыз',
+      scanQR: 'QR-кодду скандаңыз',
+      enterCode: 'Ырастоо үчүн кодду киргизиңиз',
+      enterCodePlaceholder: '6 сандуу кодду киргизиңиз',
+      enableButton: '2FA күйгүзүү',
+      disableButton: '2FA өчүрүү',
+      backupCodes: 'Камдык коддору',
+      backupCodesSubtitle: 'Бул коддорду коопсуз жерде сактаңыз',
+      saveBackupCodes: 'Коддорду сактоо',
+      downloadBackupCodes: 'Коддорду жүктөп алуу'
+    },
+    
+    messages: {
+      registrationSuccess: 'Катталуу ийгиликтүү! Ырастоо үчүн email текшериңиз.',
+      emailVerified: 'Email ийгиликтүү ырасталды!',
+      twoFactorEnabled: 'Эки факторлук аутентификация күйгүзүлдү',
+      twoFactorDisabled: 'Эки факторлук аутентификация өчүрүлдү',
+      passwordReset: 'Сыр сөз ийгиликтүү калыбына келтирилди',
+      
+      invalidCredentials: 'Туура эмес email же сыр сөз',
+      userNotFound: 'Колдонуучу табылган жок',
+      emailAlreadyExists: 'Мындай email менен колдонуучу мурдатан бар',
+      passwordTooShort: 'Сыр сөз кеминде 6 белгиден турушу керек',
+      passwordsDoNotMatch: 'Сыр сөздөр дал келбейт',
+      invalidEmail: 'Email форматы туура эмес',
+      twoFactorRequired: 'Эки факторлук аутентификациянын коду талап кылынат',
+      invalid2FACode: 'Эки факторлук аутентификациянын коду туура эмес',
+      emailNotVerified: 'Email ырасталган эмес',
+      accountNotFound: 'Аккаунт табылган жок',
+      tokenExpired: 'Токен мөөнөтү бүттү',
+      invalidToken: 'Жараксыз токен',
+      serverError: 'Сервердин ички катасы',
+      
+      checkEmail: 'Email адресиңизди текшериңиз',
+      emailSent: 'Email жөнөтүлдү',
+      verificationEmailSent: 'Ырастоо email жөнөтүлдү'
+    },
+    
+    // Toast Messages
+    toast: {
+      // Titles
+      titles: {
+        success: 'Ийгиликтүү!',
+        error: 'Ката',
+        warning: 'Эскертүү',
+        info: 'Маалымат'
+      },
+      // Success messages
+      success: {
+        registration: 'Катталуу ийгиликтүү!',
+        login: 'Кирүү ийгиликтүү!',
+        passwordReset: 'Сыр сөз калыбына келтирилди!',
+        emailSent: 'Email жөнөтүлдү!',
+        codeVerified: 'Код ырасталды!',
+        passwordChanged: 'Сыр сөз өзгөртүлдү!',
+        accountLinked: 'Аккаунт байланыштырылды!',
+        welcome: 'Кош келдиңиз!'
+      },
+      // Error messages
+      error: {
+        fillAllFields: 'Бардык милдеттүү талааларды толтуруңуз',
+        invalidEmail: 'Туура эмес email форматы',
+        passwordTooShort: 'Сыр сөз кеминде 6 белгиден турушу керек',
+        passwordsNotMatch: 'Сыр сөздөр дал келбейт',
+        invalidCode: 'Туура эмес код',
+        expiredCode: 'Код мөөнөтү өттү',
+        userNotFound: 'Колдонуучу табылган жок',
+        googleUser: 'Бул аккаунт Google аркылуу катталган',
+        serverError: 'Сервердин ички катасы',
+        registrationFailed: 'Катталуу катасы',
+        loginFailed: 'Кирүү катасы',
+        resetFailed: 'Сыр сөздү калыбына келтирүү катасы',
+        codeNotReceived: 'Код алынбады',
+        invalidCredentials: 'Кирүү маалыматтары туура эмес',
+        invalid2FACode: 'Эки факторлук аутентификациянын коду туура эмес',
+        invalidEmailOrPassword: 'Туура эмес email же сыр сөз',
+        googleUserMessage: 'Бул аккаунт Google аркылуу катталган. "Google аркылуу кирүү" баскычын колдонуңуз',
+        fillRequiredFields: 'Бардык милдеттүү талааларды толтуруңуз',
+        enter2FACode: 'Эки факторлук аутентификациянын кодун киргизиңиз',
+        userExists: 'Бул email менен колдонуучу мурунтан эле бар',
+        // Browser validation messages
+        fillThisField: 'Бул талааны толтуруңуз',
+        enterValidEmail: 'Туура email дарегин киргизиңиз',
+        passwordTooShortBrowser: 'Сыр сөз кеминде 6 белгиден турушу керек',
+        passwordsMustMatch: 'Сыр сөздөр дал келиши керек'
+      },
+      // Warning messages
+      warning: {
+        googleSignIn: 'Google аркылуу кирүү',
+        accountExists: 'Аккаунт мурунтан бар',
+        googleUserWarning: 'Бул email мурунтан Google аркылуу катталган. "Google аркылуу кирүү" баскычын колдонуңуз'
+      },
+      // Info messages
+      info: {
+        twoFactorRequired: 'Эки факторлук аутентификация',
+        codeSent: 'Ырастоо коду email дарегиңизге жөнөтүлдү!',
+        checkEmail: 'Email дарегиңизди текшериңиз',
+        twoFactorTitle: 'Эки факторлук аутентификация',
+        twoFactorMessage: 'Аутентификатор тиркемеңизден кодду киргизиңиз'
+      }
+    },
+    
+    verifyEmail: {
+      title: 'Email ырастоо',
+      subtitle: 'Биз сиздин email дарегиңизге ырастоо шилтемесин жөнөттүк',
+      success: 'Email ийгиликтүү ырасталды!',
+      expired: 'Шилтеменин мөөнөтү бүттү',
+      invalid: 'Жараксыз шилтеме',
+      resend: 'Кайра жөнөтүү'
+    },
+    
+    // Verify Code Page
+    verifyCode: {
+      title: 'Email дарегиңизди ырастаңыз',
+      subtitle: 'Биз 6 белгилик кодду жөнөттүк',
+      codeLabel: 'Ырастоо кодун киргизиңиз',
+      codePlaceholder: '000000',
+      verifyButton: 'Ырастоо',
+      resendText: 'Код барган жокпу?',
+      resendButton: 'Кайра жөнөтүү',
+      backToSignIn: '← Кирүүгө баракчасына кайтуу'
+    },
+    
+    // Email Messages
+    email: {
+      registration: {
+        subject: 'Катталууну ырастоо коду - StudAI',
+        title: 'StudAI-га кош келдиңиз!',
+        message: 'Катталганыңыз үчүн рахмат. Процессти аяктоо үчүн төмөнкү ырастоо кодун киргизиңиз:',
+        codeValid: 'Код 10 мүнөт жарактуу.',
+        ignoreMessage: 'Эгер сиз StudAI-га катталбасаңыз, бул катты өткөрүп койсоңуз болот.'
+      },
+      passwordReset: {
+        subject: 'Сыр сөздү калыбына келтирүү коду - StudAI',
+        title: 'Сыр сөздү калыбына келтирүү',
+        message: 'Сыр сөздү калыбына келтирүү үчүн төмөнкү ырастоо кодун киргизиңиз:',
+        codeValid: 'Код 10 мүнөт жарактуу.',
+        ignoreMessage: 'Эгер сиз сыр сөздү калыбына келтирүүнү сурабасаңыз, бул катты өткөрүп койсоңуз болот.'
+      },
+      twoFactor: {
+        subject: 'Эки факторлук аутентификацияны жөндөө - StudAI',
+        title: 'Эки факторлук аутентификацияны жөндөө',
+        scanMessage: 'Google Authenticator же Authy тиркемеси менен QR-кодду скандаңыз:',
+        manualMessage: 'Же бул сыр сөздү кол менен киргизиңиз:',
+        saveMessage: 'Бул кодду ишенимдүү жерде сактаңыз - ал кирүүнү калыбына келтирүү үчүн керек болот.'
+      }
+    },
+    
+    profile: {
+      title: 'Профиль',
+      personalInfo: 'Жеке маалымат',
+      security: 'Коопсуздук',
+      firstName: 'Аты',
+      lastName: 'Фамилиясы',
+      middleName: 'Атасынын аты',
+      email: 'Email',
+      changePassword: 'Сыр сөздү өзгөртүү',
+      currentPassword: 'Учурдагы сыр сөз',
+      newPassword: 'Жаңы сыр сөз',
+      confirmNewPassword: 'Жаңы сыр сөздү ырастаңыз',
+      twoFactorAuth: 'Эки факторлук аутентификация',
+      enable2FA: '2FA күйгүзүү',
+      disable2FA: '2FA өчүрүү',
+      save: 'Сактоо',
+      signOut: 'Чыгуу'
+    }
   },
   hero: {
     badge: 'Эң мыкты ИИ жардамчы',
@@ -710,7 +1475,258 @@ const englishTranslations: Translations = {
     reviews: 'Reviews',
     faq: 'FAQ',
     login: 'Login',
-    createAccount: 'Create Account'
+    createAccount: 'Create Account',
+    start: 'Start'
+  },
+  auth: {
+    or: 'or',
+    back: 'Back',
+    continue: 'Continue',
+    loading: 'Loading...',
+    
+    signIn: {
+      title: 'Sign In',
+      subtitle: 'Welcome back! Enter your details to sign in.',
+      email: 'Email address',
+      password: 'Password',
+      signInButton: 'Sign In',
+      forgotPassword: 'Forgot password?',
+      noAccount: "Don't have an account?",
+      signUp: 'Sign Up',
+      withGoogle: 'Sign in with Google',
+      twoFactorCode: 'Two-factor authentication code',
+      twoFactorTitle: 'Two-Factor Authentication',
+      twoFactorSubtitle: 'Enter the code from your authenticator app',
+      backupCode: 'Backup code',
+      useBackupCode: 'Use backup code',
+      useAuthenticator: 'Use authenticator',
+      verifyButton: 'Verify',
+      // Placeholders
+      emailPlaceholder: 'example@mail.com',
+      passwordPlaceholder: 'Enter your password'
+    },
+    
+    signUp: {
+      title: 'Create Account',
+      subtitle: 'Create an account to start using StudAI',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      middleName: 'Middle Name (optional)',
+      email: 'Email address',
+      password: 'Password',
+      confirmPassword: 'Confirm password',
+      signUpButton: 'Sign Up',
+      hasAccount: 'Already have an account?',
+      signIn: 'Sign In',
+      withGoogle: 'Sign up with Google',
+      termsAgreement: 'I agree to the',
+      privacyPolicy: 'Privacy Policy',
+      terms: 'Terms of Service',
+      // Placeholders
+      namePlaceholder: 'Enter your full name',
+      emailPlaceholder: 'example@mail.com',
+      passwordPlaceholder: 'Minimum 6 characters',
+      confirmPasswordPlaceholder: 'Repeat password'
+    },
+    
+    // Forgot Password
+    forgotPassword: {
+      title: 'Forgot Password?',
+      subtitle: 'Enter your email and we will send a code to reset your password',
+      email: 'Email address',
+      sendCodeButton: 'Send Code',
+      backToSignIn: '← Back to Sign In',
+      // Placeholders
+      emailPlaceholder: 'example@mail.com'
+    },
+    
+    // Reset Password
+    resetPassword: {
+      title: 'Reset Password',
+      subtitle: 'We sent a code to',
+      code: 'Enter verification code',
+      newPassword: 'New password',
+      confirmPassword: 'Confirm password',
+      resetButton: 'Reset Password',
+      resendText: 'Didn\'t receive the code?',
+      resendCode: 'Resend',
+      backToSignIn: '← Back to Sign In',
+      // Placeholders
+      codePlaceholder: '000000',
+      newPasswordPlaceholder: 'Minimum 6 characters',
+      confirmPasswordPlaceholder: 'Repeat password'
+    },
+    
+    twoFactor: {
+      title: 'Two-Factor Authentication',
+      subtitle: 'Protect your account with an additional layer of security',
+      setupTitle: 'Set up Two-Factor Authentication',
+      setupSubtitle: 'Scan the QR code with Google Authenticator app',
+      scanQR: 'Scan QR code',
+      enterCode: 'Enter code to confirm',
+      enterCodePlaceholder: 'Enter 6-digit code',
+      enableButton: 'Enable 2FA',
+      disableButton: 'Disable 2FA',
+      backupCodes: 'Backup codes',
+      backupCodesSubtitle: 'Save these codes in a secure place',
+      saveBackupCodes: 'Save codes',
+      downloadBackupCodes: 'Download codes'
+    },
+    
+    messages: {
+      registrationSuccess: 'Registration successful! Check your email to verify your account.',
+      emailVerified: 'Email successfully verified!',
+      twoFactorEnabled: 'Two-factor authentication enabled',
+      twoFactorDisabled: 'Two-factor authentication disabled',
+      passwordReset: 'Password successfully reset',
+      
+      invalidCredentials: 'Invalid email or password',
+      userNotFound: 'User not found',
+      emailAlreadyExists: 'User with this email already exists',
+      passwordTooShort: 'Password must be at least 6 characters',
+      passwordsDoNotMatch: 'Passwords do not match',
+      invalidEmail: 'Invalid email format',
+      twoFactorRequired: 'Two-factor authentication code required',
+      invalid2FACode: 'Invalid two-factor authentication code',
+      emailNotVerified: 'Email not verified',
+      accountNotFound: 'Account not found',
+      tokenExpired: 'Token expired',
+      invalidToken: 'Invalid token',
+      serverError: 'Internal server error',
+      
+      checkEmail: 'Check your email',
+      emailSent: 'Email sent',
+      verificationEmailSent: 'Verification email sent'
+    },
+    
+    // Toast Messages
+    toast: {
+      // Titles
+      titles: {
+        success: 'Success!',
+        error: 'Error',
+        warning: 'Warning',
+        info: 'Info'
+      },
+      // Success messages
+      success: {
+        registration: 'Registration successful!',
+        login: 'Login successful!',
+        passwordReset: 'Password reset!',
+        emailSent: 'Email sent!',
+        codeVerified: 'Code verified!',
+        passwordChanged: 'Password changed!',
+        accountLinked: 'Account linked!',
+        welcome: 'Welcome!'
+      },
+      // Error messages
+      error: {
+        fillAllFields: 'Fill all required fields',
+        invalidEmail: 'Invalid email format',
+        passwordTooShort: 'Password must be at least 6 characters',
+        passwordsNotMatch: 'Passwords do not match',
+        invalidCode: 'Invalid code',
+        expiredCode: 'Code expired',
+        userNotFound: 'User not found',
+        googleUser: 'This account is registered via Google',
+        serverError: 'Internal server error',
+        registrationFailed: 'Registration failed',
+        loginFailed: 'Login failed',
+        resetFailed: 'Password reset failed',
+        codeNotReceived: 'Code not received',
+        invalidCredentials: 'Invalid login credentials',
+        invalid2FACode: 'Invalid two-factor authentication code',
+        invalidEmailOrPassword: 'Invalid email or password',
+        googleUserMessage: 'This account is registered via Google. Use the "Sign in with Google" button',
+        fillRequiredFields: 'Fill all required fields',
+        enter2FACode: 'Enter two-factor authentication code',
+        userExists: 'User with this email already exists',
+        // Browser validation messages
+        fillThisField: 'Please fill out this field',
+        enterValidEmail: 'Please enter a valid email address',
+        passwordTooShortBrowser: 'Password must be at least 6 characters',
+        passwordsMustMatch: 'Passwords must match'
+      },
+      // Warning messages
+      warning: {
+        googleSignIn: 'Sign in with Google',
+        accountExists: 'Account already exists',
+        googleUserWarning: 'This email is already registered via Google. Use the "Sign in with Google" button'
+      },
+      // Info messages
+      info: {
+        twoFactorRequired: 'Two-factor authentication',
+        codeSent: 'Verification code sent to your email!',
+        checkEmail: 'Check your email',
+        twoFactorTitle: 'Two-factor authentication',
+        twoFactorMessage: 'Enter the code from your authenticator app'
+      }
+    },
+    
+    verifyEmail: {
+      title: 'Verify Email',
+      subtitle: 'We sent a verification link to your email',
+      success: 'Email successfully verified!',
+      expired: 'Link expired',
+      invalid: 'Invalid link',
+      resend: 'Resend'
+    },
+    
+    // Verify Code Page
+    verifyCode: {
+      title: 'Verify your email',
+      subtitle: 'We sent a 6-digit code to',
+      codeLabel: 'Enter verification code',
+      codePlaceholder: '000000',
+      verifyButton: 'Verify',
+      resendText: 'Didn\'t receive the code?',
+      resendButton: 'Resend',
+      backToSignIn: '← Back to Sign In'
+    },
+    
+    // Email Messages
+    email: {
+      registration: {
+        subject: 'Registration verification code - StudAI',
+        title: 'Welcome to StudAI!',
+        message: 'Thank you for registering. To complete the process, enter the verification code below:',
+        codeValid: 'The code is valid for 10 minutes.',
+        ignoreMessage: 'If you did not register on StudAI, simply ignore this email.'
+      },
+      passwordReset: {
+        subject: 'Password reset code - StudAI',
+        title: 'Password Reset',
+        message: 'To reset your password, enter the verification code below:',
+        codeValid: 'The code is valid for 10 minutes.',
+        ignoreMessage: 'If you did not request a password reset, simply ignore this email.'
+      },
+      twoFactor: {
+        subject: 'Two-factor authentication setup - StudAI',
+        title: 'Two-Factor Authentication Setup',
+        scanMessage: 'Scan the QR code with Google Authenticator or Authy app:',
+        manualMessage: 'Or enter this secret key manually:',
+        saveMessage: 'Save this code in a secure place - it will be needed to restore access.'
+      }
+    },
+    
+    profile: {
+      title: 'Profile',
+      personalInfo: 'Personal Information',
+      security: 'Security',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      middleName: 'Middle Name',
+      email: 'Email',
+      changePassword: 'Change Password',
+      currentPassword: 'Current Password',
+      newPassword: 'New Password',
+      confirmNewPassword: 'Confirm New Password',
+      twoFactorAuth: 'Two-Factor Authentication',
+      enable2FA: 'Enable 2FA',
+      disable2FA: 'Disable 2FA',
+      save: 'Save',
+      signOut: 'Sign Out'
+    }
   },
   hero: {
     badge: 'Best AI Assistant',

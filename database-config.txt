@@ -1,0 +1,17 @@
+# Настройки для PostgreSQL
+# Добавьте эти переменные в ваш .env или .env.local файл:
+
+# NextAuth.js
+NEXTAUTH_SECRET=your-super-secret-key-here-min-32-chars-for-studai-app
+NEXTAUTH_URL=http://localhost:3000
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Email (Gmail SMTP)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+
+# PostgreSQL Database
+DATABASE_URL="postgresql://postgres:12345@localhost:5432/studai?schema=public"
