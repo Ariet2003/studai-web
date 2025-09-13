@@ -526,6 +526,54 @@ export interface Translations {
     }
   }
   
+  // Work Generation Form
+  workGenerator: {
+    title: string
+    subtitle: string
+    form: {
+      workType: string
+      workLanguage: string
+      workLanguageOptions: {
+        russian: string
+        kyrgyz: string
+        english: string
+      }
+      topic: string
+      topicPlaceholder: string
+      subject: string
+      subjectPlaceholder: string
+      pageCount: string
+      pageCountOptions: {
+        pages5_10: string
+        pages10_20: string
+        pages20_30: string
+        pages30_40: string
+      }
+      requirements: string
+      requirementsPlaceholder: string
+      titlePage: string
+      titlePageFields: {
+        university: string
+        universityPlaceholder: string
+        studentName: string
+        studentNamePlaceholder: string
+        group: string
+        groupPlaceholder: string
+        teacherName: string
+        teacherNamePlaceholder: string
+      }
+      generateButton: string
+    }
+    validation: {
+      topicRequired: string
+      subjectRequired: string
+      universityRequired: string
+      studentNameRequired: string
+      groupRequired: string
+      teacherNameRequired: string
+    }
+  }
+  
   // Footer
   footer: {
     description: string
@@ -1057,6 +1105,52 @@ const russianTranslations: Translations = {
         description: 'Доклад для выступления',
         time: '~3 мин'
       }
+    }
+  },
+  workGenerator: {
+    title: 'Создание плана работы',
+    subtitle: 'Заполните параметры для генерации качественного плана вашей работы',
+    form: {
+      workType: 'Тип работы',
+      workLanguage: 'Язык работы',
+      workLanguageOptions: {
+        russian: 'Русский',
+        kyrgyz: 'Кыргызский',
+        english: 'Английский'
+      },
+      topic: 'Тема работы',
+      topicPlaceholder: 'Введите тему работы',
+      subject: 'Предмет работы',
+      subjectPlaceholder: 'Например: История, Математика, Физика',
+      pageCount: 'Количество страниц',
+      pageCountOptions: {
+        pages5_10: '5-10 страниц',
+        pages10_20: '10-20 страниц',
+        pages20_30: '20-30 страниц',
+        pages30_40: '30-40 страниц'
+      },
+      requirements: 'Пожелания к теме (опционально)',
+      requirementsPlaceholder: 'Дополнительные требования или пожелания',
+      titlePage: 'Добавить титульный лист',
+      titlePageFields: {
+        university: 'Название университета',
+        universityPlaceholder: 'Например: КНУ им. Ж. Баласагына',
+        studentName: 'ФИО исполнителя (студента)',
+        studentNamePlaceholder: 'Иванов Иван Иванович',
+        group: 'Группа исполнителя',
+        groupPlaceholder: 'Например: ИТ-20-1',
+        teacherName: 'ФИО преподавателя',
+        teacherNamePlaceholder: 'Петров Петр Петрович'
+      },
+      generateButton: 'Готовить план работы'
+    },
+    validation: {
+      topicRequired: 'Тема работы обязательна',
+      subjectRequired: 'Предмет работы обязателен',
+      universityRequired: 'Название университета обязательно',
+      studentNameRequired: 'ФИО студента обязательно',
+      groupRequired: 'Группа обязательна',
+      teacherNameRequired: 'ФИО преподавателя обязательно'
     }
   },
   footer: {
@@ -1591,6 +1685,52 @@ const kyrgyzTranslations: Translations = {
       }
     }
   },
+  workGenerator: {
+    title: 'Иштин планын түзүү',
+    subtitle: 'Ишиңиздин сапаттуу планын генерациялоо үчүн параметрлерди толтуруңуз',
+    form: {
+      workType: 'Иштин түрү',
+      workLanguage: 'Иштин тили',
+      workLanguageOptions: {
+        russian: 'Орусча',
+        kyrgyz: 'Кыргызча',
+        english: 'Англисче'
+      },
+      topic: 'Иштин темасы',
+      topicPlaceholder: 'Иштин темасын киргизиңиз',
+      subject: 'Предмет',
+      subjectPlaceholder: 'Мисалы: Тарых, Математика, Физика',
+      pageCount: 'Бет саны',
+      pageCountOptions: {
+        pages5_10: '5-10 бет',
+        pages10_20: '10-20 бет',
+        pages20_30: '20-30 бет',
+        pages30_40: '30-40 бет'
+      },
+      requirements: 'Темага каалоолор (милдеттүү эмес)',
+      requirementsPlaceholder: 'Кошумча талаптар же каалоолор',
+      titlePage: 'Титулдук барак кошуу',
+      titlePageFields: {
+        university: 'Университеттин аталышы',
+        universityPlaceholder: 'Мисалы: Ж. Баласагын атындагы КУУ',
+        studentName: 'Студенттин аты-жөнү',
+        studentNamePlaceholder: 'Асанов Асан Асанович',
+        group: 'Студенттин тобу',
+        groupPlaceholder: 'Мисалы: ИТ-20-1',
+        teacherName: 'Мугалимдин аты-жөнү',
+        teacherNamePlaceholder: 'Үсөнов Үсөн Үсөнович'
+      },
+      generateButton: 'Жумуш планын даярдоо'
+    },
+    validation: {
+      topicRequired: 'Иштин темасы милдеттүү',
+      subjectRequired: 'Предмет милдеттүү',
+      universityRequired: 'Университеттин аталышы милдеттүү',
+      studentNameRequired: 'Студенттин аты-жөнү милдеттүү',
+      groupRequired: 'Студенттин тобу милдеттүү',
+      teacherNameRequired: 'Мугалимдин аты-жөнү милдеттүү'
+    }
+  },
   footer: {
     description: 'Жасалма интеллект жардамы менен студенттик жумуштарды түзүү үчүн заманбап кызмат. 3 мүнөттө сапаттуу реферат, курстук, СӨЖ жана докладдар.',
     services: 'Кызматтар',
@@ -2121,6 +2261,52 @@ const englishTranslations: Translations = {
         description: 'Report for speaking',
         time: '~3 min'
       }
+    }
+  },
+  workGenerator: {
+    title: 'Create Work Plan',
+    subtitle: 'Fill in the parameters to generate a quality plan for your work',
+    form: {
+      workType: 'Work Type',
+      workLanguage: 'Work Language',
+      workLanguageOptions: {
+        russian: 'Russian',
+        kyrgyz: 'Kyrgyz',
+        english: 'English'
+      },
+      topic: 'Work Topic',
+      topicPlaceholder: 'Enter work topic',
+      subject: 'Subject',
+      subjectPlaceholder: 'For example: History, Mathematics, Physics',
+      pageCount: 'Number of Pages',
+      pageCountOptions: {
+        pages5_10: '5-10 pages',
+        pages10_20: '10-20 pages',
+        pages20_30: '20-30 pages',
+        pages30_40: '30-40 pages'
+      },
+      requirements: 'Topic Requirements (optional)',
+      requirementsPlaceholder: 'Additional requirements or preferences',
+      titlePage: 'Add Title Page',
+      titlePageFields: {
+        university: 'University Name',
+        universityPlaceholder: 'For example: Kyrgyz National University',
+        studentName: 'Student Full Name',
+        studentNamePlaceholder: 'John Smith',
+        group: 'Student Group',
+        groupPlaceholder: 'For example: IT-20-1',
+        teacherName: 'Teacher Full Name',
+        teacherNamePlaceholder: 'Dr. Johnson'
+      },
+      generateButton: 'Generate Work Plan'
+    },
+    validation: {
+      topicRequired: 'Work topic is required',
+      subjectRequired: 'Subject is required',
+      universityRequired: 'University name is required',
+      studentNameRequired: 'Student name is required',
+      groupRequired: 'Student group is required',
+      teacherNameRequired: 'Teacher name is required'
     }
   },
   footer: {

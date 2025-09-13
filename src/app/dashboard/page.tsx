@@ -528,6 +528,7 @@ export default function DashboardPage() {
                   transition={{ delay: 0.5 + index * 0.1 }}
                   whileHover={{ scale: 1.02, y: -3 }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push(`/dashboard/create?type=${work.id}`)}
                   className={`group relative overflow-hidden rounded-2xl p-4 cursor-pointer transition-all duration-300 backdrop-blur-xl border ${
                     isDarkMode 
                       ? 'bg-[#181f38]/60 hover:bg-[#181f38]/80 border-[#181f38]/40 hover:border-[#2d3748]' 
