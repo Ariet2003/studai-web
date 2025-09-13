@@ -475,6 +475,57 @@ export interface Translations {
     createOrder: string
   }
   
+  // Dashboard
+  dashboard: {
+    header: {
+      profile: string
+      settings: string
+      signOut: string
+    }
+    sidebar: {
+      dashboard: string
+      myWorks: string
+      newWork: string
+      history: string
+      settings: string
+      support: string
+    }
+    main: {
+      welcome: string
+      welcomeSubtitle: string
+      todayGenerate: string
+      todayGenerateSubtitle: string
+      quickActions: string
+      lastWorks: string
+      viewAll: string
+      noWorks: string
+      noWorksDescription: string
+      createFirst: string
+    }
+    workTypes: {
+      essay: {
+        title: string
+        description: string
+        time: string
+      }
+      coursework: {
+        title: string
+        description: string
+        time: string
+      }
+      srs: {
+        title: string
+        description: string
+        time: string
+      }
+      report: {
+        title: string
+        description: string
+        time: string
+      }
+    }
+  }
+  
   // Footer
   footer: {
     description: string
@@ -959,6 +1010,55 @@ const russianTranslations: Translations = {
     subtitle: 'StudAI поможет вам создать качественную работу за считанные минуты. Рефераты, курсовые, СРС и доклады с гарантией уникальности 90%+.',
     createOrder: 'Сделать заказ'
   },
+  dashboard: {
+    header: {
+      profile: 'Профиль',
+      settings: 'Настройки',
+      signOut: 'Выйти'
+    },
+    sidebar: {
+      dashboard: 'Главная',
+      myWorks: 'Мои работы',
+      newWork: 'Новая работа',
+      history: 'История',
+      settings: 'Настройки',
+      support: 'Поддержка'
+    },
+    main: {
+      welcome: 'Добро пожаловать',
+      welcomeSubtitle: 'Ваш персональный ИИ-помощник для создания студенческих работ',
+      todayGenerate: 'Что будем генерировать сегодня?',
+      todayGenerateSubtitle: 'Выберите тип работы и создайте качественную работу за считанные минуты',
+      quickActions: 'Быстрые действия',
+      lastWorks: 'Последние работы',
+      viewAll: 'Посмотреть все',
+      noWorks: 'У вас пока нет работ',
+      noWorksDescription: 'Создайте свою первую работу с помощью ИИ',
+      createFirst: 'Создать первую работу'
+    },
+    workTypes: {
+      essay: {
+        title: 'Реферат',
+        description: 'Академический текст по заданной теме',
+        time: '~3 мин'
+      },
+      coursework: {
+        title: 'Курсовая работа',
+        description: 'Исследовательская работа с анализом',
+        time: '~5 мин'
+      },
+      srs: {
+        title: 'СРС',
+        description: 'Самостоятельная работа студента',
+        time: '~2 мин'
+      },
+      report: {
+        title: 'Доклад',
+        description: 'Доклад для выступления',
+        time: '~3 мин'
+      }
+    }
+  },
   footer: {
     description: 'Современный сервис для создания студенческих работ с помощью искусственного интеллекта. Качественные рефераты, курсовые, СРС и доклады за 3 минуты.',
     services: 'Услуги',
@@ -1442,6 +1542,55 @@ const kyrgyzTranslations: Translations = {
     subtitle: 'StudAI сизге бир нече мүнөттө сапаттуу ишти түзүүгө жардам берет. 90%+ уникалдуулук кепилдиги менен реферат, курстук, СӨЖ жана докладдар.',
     createOrder: 'Буйрутма кылуу'
   },
+  dashboard: {
+    header: {
+      profile: 'Профиль',
+      settings: 'Жөндөөлөр',
+      signOut: 'Чыгуу'
+    },
+    sidebar: {
+      dashboard: 'Негизги бет',
+      myWorks: 'Жумуштарым',
+      newWork: 'Жаңы жумуш',
+      history: 'Тарых',
+      settings: 'Жөндөөлөр',
+      support: 'Колдоо'
+    },
+    main: {
+      welcome: 'Кош келдиңиз',
+      welcomeSubtitle: 'Студенттик жумуштарды түзүү үчүн сиздин жеке ИИ жардамчыңыз',
+      todayGenerate: 'Бүгүн эмне жасайбыз?',
+      todayGenerateSubtitle: 'Жумуш түрүн тандаңыз жана бир нече мүнөттө сапаттуу ишти алыңыз',
+      quickActions: 'Тез аракеттер',
+      lastWorks: 'Акыркы жумуштар',
+      viewAll: 'Баарын көрүү',
+      noWorks: 'Сизде азырынча жумуштар жок',
+      noWorksDescription: 'ИИ жардамы менен биринчи жумушуңузду түзүңүз',
+      createFirst: 'Биринчи жумушту түзүү'
+    },
+    workTypes: {
+      essay: {
+        title: 'Реферат',
+        description: 'Берилген тема боюнча академиялык текст',
+        time: '~3 мүнөт'
+      },
+      coursework: {
+        title: 'Курстук жумуш',
+        description: 'Анализ менен изилдөө жумушу',
+        time: '~5 мүнөт'
+      },
+      srs: {
+        title: 'СӨЖ',
+        description: 'Студенттин өз алдынча жумушу',
+        time: '~2 мүнөт'
+      },
+      report: {
+        title: 'Доклад',
+        description: 'Сүйлөө үчүн доклад',
+        time: '~3 мүнөт'
+      }
+    }
+  },
   footer: {
     description: 'Жасалма интеллект жардамы менен студенттик жумуштарды түзүү үчүн заманбап кызмат. 3 мүнөттө сапаттуу реферат, курстук, СӨЖ жана докладдар.',
     services: 'Кызматтар',
@@ -1924,6 +2073,55 @@ const englishTranslations: Translations = {
     title: 'Ready to order your work?',
     subtitle: 'StudAI will help you create quality work in minutes. Essays, coursework, independent work and reports with 90%+ uniqueness guarantee.',
     createOrder: 'Place Order'
+  },
+  dashboard: {
+    header: {
+      profile: 'Profile',
+      settings: 'Settings',
+      signOut: 'Sign Out'
+    },
+    sidebar: {
+      dashboard: 'Dashboard',
+      myWorks: 'My Works',
+      newWork: 'New Work',
+      history: 'History',
+      settings: 'Settings',
+      support: 'Support'
+    },
+    main: {
+      welcome: 'Welcome',
+      welcomeSubtitle: 'Your personal AI assistant for creating student papers',
+      todayGenerate: 'What shall we generate today?',
+      todayGenerateSubtitle: 'Choose the type of work and create quality work in minutes',
+      quickActions: 'Quick Actions',
+      lastWorks: 'Recent Works',
+      viewAll: 'View All',
+      noWorks: 'You have no works yet',
+      noWorksDescription: 'Create your first work with AI',
+      createFirst: 'Create First Work'
+    },
+    workTypes: {
+      essay: {
+        title: 'Essay',
+        description: 'Academic text on a given topic',
+        time: '~3 min'
+      },
+      coursework: {
+        title: 'Coursework',
+        description: 'Research work with analysis',
+        time: '~5 min'
+      },
+      srs: {
+        title: 'Independent Work',
+        description: 'Student independent assignment',
+        time: '~2 min'
+      },
+      report: {
+        title: 'Report',
+        description: 'Report for speaking',
+        time: '~3 min'
+      }
+    }
   },
   footer: {
     description: 'Modern service for creating student works with artificial intelligence. Quality essays, coursework, independent work and reports in 3 minutes.',
