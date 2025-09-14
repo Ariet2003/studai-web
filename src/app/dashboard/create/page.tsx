@@ -51,9 +51,34 @@ export default function CreateWorkPage() {
   
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  // Получаем язык из куки
+  const getLanguageFromCookie = (): string => {
+    if (typeof window !== 'undefined') {
+      const nameEQ = "studai-language="
+      const ca = document.cookie.split(';')
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i]
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length)
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length)
+      }
+    }
+    return 'ru'
+  }
+
+  // Определяем язык работы по умолчанию на основе языка интерфейса из куки
+  const getDefaultWorkLanguage = () => {
+    const cookieLanguage = getLanguageFromCookie()
+    switch (cookieLanguage) {
+      case 'ru': return 'russian'
+      case 'ky': return 'kyrgyz' 
+      case 'en': return 'english'
+      default: return 'russian'
+    }
+  }
+
   const [formData, setFormData] = useState<FormData>({
     workType: searchParams?.get('type') || 'essay',
-    workLanguage: 'russian',
+    workLanguage: getDefaultWorkLanguage(),
     topic: '',
     subject: '',
     pageCount: 'pages10_20',
@@ -145,7 +170,9 @@ export default function CreateWorkPage() {
           ...prevData,
           ...savedFormData,
           // Сохраняем workType из URL параметра, если он есть
-          workType: searchParams?.get('type') || savedFormData.workType || 'essay'
+          workType: searchParams?.get('type') || savedFormData.workType || 'essay',
+          // Обновляем язык работы если он не был явно выбран пользователем
+          workLanguage: savedFormData.workLanguage || getDefaultWorkLanguage()
         }))
       }
 
@@ -154,6 +181,21 @@ export default function CreateWorkPage() {
       }
     }
   }, [isClient, searchParams])
+
+  // Обновляем язык работы при изменении языка интерфейса (только если пользователь не выбирал язык работы явно)
+  useEffect(() => {
+    if (isClient) {
+      const savedFormData = loadFormData()
+      // Если нет сохраненных данных или пользователь не выбирал язык работы явно
+      if (!savedFormData?.workLanguage) {
+        const defaultLang = getDefaultWorkLanguage()
+        setFormData(prevData => ({
+          ...prevData,
+          workLanguage: defaultLang
+        }))
+      }
+    }
+  }, [isClient]) // Убираем зависимость от language, так как теперь читаем из куки напрямую
 
   useEffect(() => {
     if (status === 'loading') return
@@ -288,7 +330,10 @@ export default function CreateWorkPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          uiLanguage: language // Добавляем язык интерфейса
+        }),
       })
 
       if (!response.ok) {
@@ -759,10 +804,10 @@ export default function CreateWorkPage() {
                 <AIOrb size={isMobile ? 120 : 200} />
               </div>
               <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                Генерируется план работы
+                {t.workGenerator.generating.title}
               </h3>
               <p className={`text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
-                ИИ создает индивидуальный план специально для вашей работы...
+                {t.workGenerator.generating.subtitle}
               </p>
             </div>
           </motion.div>

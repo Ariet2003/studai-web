@@ -11,7 +11,14 @@ import {
   BookOpen,
   GraduationCap,
   Clock,
-  Check
+  Check,
+  Edit2,
+  Trash2,
+  Plus,
+  Save,
+  X,
+  MoreVertical,
+  AlertTriangle
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getTranslation } from '@/translations'
@@ -51,6 +58,15 @@ export default function ResultPage() {
   const [currentItemIndex, setCurrentItemIndex] = useState(0)
   const [currentItemText, setCurrentItemText] = useState('')
   const [isTypingComplete, setIsTypingComplete] = useState(false)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [editingText, setEditingText] = useState('')
+  const [editablePlan, setEditablePlan] = useState<string[]>([])
+  const [isMobile, setIsMobile] = useState(false)
+  const [showAddDropdown, setShowAddDropdown] = useState<number | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteModalIndex, setDeleteModalIndex] = useState<number | null>(null)
+  const [mobileMenuIndex, setMobileMenuIndex] = useState<number | null>(null)
+  const [newItemIndex, setNewItemIndex] = useState<number | null>(null)
 
   // Функции для работы с темой
   const getThemeCookie = (): boolean => {
@@ -83,17 +99,20 @@ export default function ResultPage() {
     report: <Clock className="w-5 h-5" />
   }
 
-  const workTypeNames = {
-    essay: 'Реферат',
-    coursework: 'Курсовая работа',
-    srs: 'СРС',
-    report: 'Доклад'
-  }
+  const workTypeNames = t.result.workTypeNames
 
   useEffect(() => {
     if (isClient) {
       const savedTheme = getThemeCookie()
       setIsDarkMode(savedTheme)
+      
+      // Определяем мобильное устройство
+      const checkIsMobile = () => {
+        setIsMobile(window.innerWidth < 768)
+      }
+      
+      checkIsMobile()
+      window.addEventListener('resize', checkIsMobile)
       
       // Загружаем готовый план и запускаем эффект печатания
       const savedPlan = localStorage.getItem('studai-generated-plan')
@@ -120,8 +139,25 @@ export default function ResultPage() {
       }
       window.addEventListener('popstate', handlePopState)
 
+      // Закрытие мобильного меню и выпадающих списков при клике вне их
+      const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target as Element
+        
+        if (mobileMenuIndex !== null && !target.closest('.mobile-menu-container')) {
+          setMobileMenuIndex(null)
+        }
+        
+        if (showAddDropdown !== null && !target.closest('.add-dropdown-container')) {
+          setShowAddDropdown(null)
+        }
+      }
+      
+      document.addEventListener('click', handleClickOutside)
+
       return () => {
         window.removeEventListener('popstate', handlePopState)
+        window.removeEventListener('resize', checkIsMobile)
+        document.removeEventListener('click', handleClickOutside)
       }
     }
   }, [isClient, router])
@@ -158,6 +194,17 @@ export default function ResultPage() {
           newItems[itemIndex] = partialText
           return newItems
         })
+        
+        // Автоматическая прокрутка к текущему элементу
+        setTimeout(() => {
+          const currentElement = document.querySelector(`[data-plan-item="${itemIndex}"]`)
+          if (currentElement) {
+            currentElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            })
+          }
+        }, 100)
         
         // Скорость печатания
         const delay = currentItem[charIndex - 1] === ' ' ? 10 : 15
@@ -207,6 +254,158 @@ export default function ResultPage() {
   const handleCreateWork = () => {
     // Здесь будет логика создания полной работы
     alert('Функция создания полной работы будет реализована позже')
+  }
+
+  // Функции для редактирования плана
+  const handleEditItem = (index: number) => {
+    setEditingIndex(index)
+    setEditingText(editablePlan[index] || typedItems[index])
+  }
+
+  const handleSaveItem = () => {
+    if (editingIndex !== null) {
+      const updatedPlan = [...editablePlan]
+      if (updatedPlan.length === 0) {
+        // Если editablePlan пуст, копируем из typedItems
+        updatedPlan.push(...typedItems)
+      }
+      updatedPlan[editingIndex] = editingText
+      setEditablePlan(updatedPlan)
+      
+      // Обновляем также typedItems для отображения
+      const updatedTypedItems = [...typedItems]
+      updatedTypedItems[editingIndex] = editingText
+      setTypedItems(updatedTypedItems)
+      
+      // Сбрасываем состояние нового элемента
+      setNewItemIndex(null)
+      setEditingIndex(null)
+      setEditingText('')
+    }
+  }
+
+  const handleCancelEdit = () => {
+    // Если это новый элемент, удаляем его
+    if (newItemIndex !== null && editingIndex === newItemIndex) {
+      const updatedPlan = editablePlan.length > 0 ? [...editablePlan] : [...typedItems]
+      updatedPlan.splice(newItemIndex, 1)
+      setEditablePlan(updatedPlan)
+      
+      // Обновляем typedItems
+      const updatedTypedItems = [...typedItems]
+      updatedTypedItems.splice(newItemIndex, 1)
+      setTypedItems(updatedTypedItems)
+      
+      setNewItemIndex(null)
+    }
+    
+    setEditingIndex(null)
+    setEditingText('')
+  }
+
+  const handleDeleteItem = (index: number) => {
+    const updatedPlan = editablePlan.length > 0 ? [...editablePlan] : [...typedItems]
+    updatedPlan.splice(index, 1)
+    setEditablePlan(updatedPlan)
+    
+    // Обновляем typedItems
+    const updatedTypedItems = [...typedItems]
+    updatedTypedItems.splice(index, 1)
+    setTypedItems(updatedTypedItems)
+    
+    // Сбрасываем редактирование если удаляем редактируемый элемент
+    if (editingIndex === index) {
+      setEditingIndex(null)
+      setEditingText('')
+    } else if (editingIndex !== null && editingIndex > index) {
+      setEditingIndex(editingIndex - 1)
+    }
+  }
+
+  // Открытие выпадающего списка добавления
+  const handleOpenAddDropdown = (afterIndex: number) => {
+    setShowAddDropdown(showAddDropdown === afterIndex ? null : afterIndex)
+    setMobileMenuIndex(null) // Закрываем мобильное меню
+  }
+
+  // Функция для поиска правильной позиции для новой главы
+  const findChapterInsertPosition = (fromIndex: number, plan: string[]) => {
+    // Если это глава, размещаем после всех подглав текущей главы
+    let insertIndex = fromIndex + 1
+    
+    // Ищем текущую главу (идем назад от fromIndex)
+    let currentChapterIndex = fromIndex
+    while (currentChapterIndex >= 0) {
+      const item = plan[currentChapterIndex]
+      const isChapter = item?.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.|Новая глава)/)
+      if (isChapter) {
+        break
+      }
+      currentChapterIndex--
+    }
+    
+    // Теперь ищем конец всех подглав этой главы
+    for (let i = currentChapterIndex + 1; i < plan.length; i++) {
+      const item = plan[i]
+      const isChapter = item?.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.|Новая глава)/)
+      
+      if (isChapter) {
+        // Нашли следующую главу, вставляем перед ней
+        insertIndex = i
+        break
+      } else {
+        // Это подглава, продолжаем поиск
+        insertIndex = i + 1
+      }
+    }
+    
+    return insertIndex
+  }
+
+  // Добавление нового элемента с определенным типом
+  const handleAddItem = (afterIndex: number, isChapter: boolean) => {
+    const currentPlan = editablePlan.length > 0 ? editablePlan : typedItems
+    
+    const newItem = isChapter ? 'Новая глава' : 'Новый подраздел'
+    
+    // Определяем правильную позицию для вставки
+    let insertIndex = afterIndex + 1
+    if (isChapter) {
+      insertIndex = findChapterInsertPosition(afterIndex, currentPlan)
+    }
+    
+    const updatedPlan = [...currentPlan]
+    updatedPlan.splice(insertIndex, 0, newItem)
+    setEditablePlan(updatedPlan)
+    
+    // Обновляем typedItems
+    const updatedTypedItems = [...typedItems]
+    updatedTypedItems.splice(insertIndex, 0, newItem)
+    setTypedItems(updatedTypedItems)
+    
+    // Закрываем выпадающий список
+    setShowAddDropdown(null)
+    
+    // Помечаем как новый элемент и начинаем редактирование
+    setNewItemIndex(insertIndex)
+    setEditingIndex(insertIndex)
+    setEditingText(newItem)
+  }
+
+  // Открытие модального окна удаления
+  const handleOpenDeleteModal = (index: number) => {
+    setDeleteModalIndex(index)
+    setShowDeleteModal(true)
+    setMobileMenuIndex(null) // Закрываем мобильное меню
+  }
+
+  // Подтверждение удаления
+  const handleConfirmDelete = () => {
+    if (deleteModalIndex !== null) {
+      handleDeleteItem(deleteModalIndex)
+      setShowDeleteModal(false)
+      setDeleteModalIndex(null)
+    }
   }
 
   // Theme toggle component
@@ -367,7 +566,7 @@ export default function ResultPage() {
                     {generatedPlan.title}
                   </h2>
                   <p className={`text-sm ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
-                    {generatedPlan.metadata ? `${workTypeNames[generatedPlan.metadata.workType as keyof typeof workTypeNames]} • ${generatedPlan.metadata.subject}` : 'План работы'}
+                    {generatedPlan.metadata ? `${workTypeNames[generatedPlan.metadata.workType as keyof typeof workTypeNames]} • ${generatedPlan.metadata.subject}` : t.result.planGeneration.completed}
                   </p>
                 </div>
               </div>
@@ -375,25 +574,25 @@ export default function ResultPage() {
               {generatedPlan.metadata && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>Тип:</span>
+                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>{t.result.workInfo.type}</span>
                     <span className={`${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       {workTypeNames[generatedPlan.metadata.workType as keyof typeof workTypeNames]}
                     </span>
                   </div>
                   <div>
-                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>Язык:</span>
+                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>{t.result.workInfo.language}</span>
                     <span className={`${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                      {generatedPlan.metadata.workLanguage}
+                      {t.workGenerator.form.workLanguageOptions[generatedPlan.metadata.workLanguage as keyof typeof t.workGenerator.form.workLanguageOptions]}
                     </span>
                   </div>
                   <div>
-                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>Страниц:</span>
+                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>{t.result.workInfo.pages}</span>
                     <span className={`${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                      {generatedPlan.metadata.pageCount}
+                      {t.workGenerator.form.pageCountOptions[generatedPlan.metadata.pageCount as keyof typeof t.workGenerator.form.pageCountOptions]}
                     </span>
                   </div>
                   <div>
-                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>Предмет:</span>
+                    <span className={`block font-medium ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>{t.result.workInfo.subject}</span>
                     <span className={`${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       {generatedPlan.metadata.subject}
                     </span>
@@ -419,14 +618,14 @@ export default function ResultPage() {
                   <>
                     <div className={`w-3 h-3 rounded-full bg-green-500 animate-pulse`}></div>
                     <h2 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                      ИИ генерирует план...
+                      {t.result.planGeneration.generating}
                     </h2>
                   </>
                 ) : (
                   <>
                     <div className={`w-3 h-3 rounded-full bg-blue-500`}></div>
                     <h2 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                      План работы
+                      {t.result.planGeneration.completed}
                     </h2>
                   </>
                 )}
@@ -437,25 +636,230 @@ export default function ResultPage() {
                     // Показываем только непустые элементы
                     if (!item) return null
                     
-                    const isChapter = item.startsWith('Глава') || item.startsWith('Введение') || item.startsWith('Заключение') || item.startsWith('Список литературы')
+                    // Определяем является ли элемент главой или разделом
+                    const isChapter = item.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.|Новая глава)/)
+                    const isSubsection = !isChapter || item === 'Новый подраздел'
                     const isCurrentItem = index === currentItemIndex && !isTypingComplete
                     
                     return (
                       <div
                         key={`item-${index}`}
-                        className={`p-3 rounded-lg ${
+                        data-plan-item={index}
+                        className={`group relative p-3 rounded-lg transition-all duration-200 ${
                           isDarkMode 
-                            ? 'bg-[#0f172a]/40' 
-                            : 'bg-slate-50/50'
+                            ? 'bg-[#0f172a]/40 hover:bg-[#0f172a]/60' 
+                            : 'bg-slate-50/50 hover:bg-slate-100/70'
                         } ${
                           isChapter
-                            ? `text-lg font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`
-                            : `ml-4 ${isDarkMode ? 'text-white' : 'text-slate-800'}`
+                            ? `text-sm md:text-lg font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`
+                            : `ml-4 text-sm md:text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`
                         }`}
                       >
-                        {item}
-                        {isCurrentItem && (
-                          <span className="animate-pulse ml-1 text-blue-500 font-mono">|</span>
+                        {editingIndex === index ? (
+                          // Режим редактирования
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editingText}
+                              onChange={(e) => setEditingText(e.target.value)}
+                              className={`flex-1 px-2 py-1 rounded border ${
+                                isDarkMode 
+                                  ? 'bg-[#2d3748] border-[#4a5568] text-white' 
+                                  : 'bg-white border-slate-300 text-slate-900'
+                              } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSaveItem()
+                                if (e.key === 'Escape') handleCancelEdit()
+                              }}
+                            />
+                            <button
+                              onClick={handleSaveItem}
+                              className={`p-1 rounded transition-colors ${
+                                isDarkMode 
+                                  ? 'hover:bg-green-600/20 text-green-400' 
+                                  : 'hover:bg-green-100 text-green-600'
+                              }`}
+                            >
+                              <Save className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className={`p-1 rounded transition-colors ${
+                                isDarkMode 
+                                  ? 'hover:bg-red-600/20 text-red-400' 
+                                  : 'hover:bg-red-100 text-red-600'
+                              }`}
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          // Режим просмотра
+                          <div className="flex items-center justify-between">
+                            <span className="flex-1">
+                              {item}
+                              {isCurrentItem && (
+                                <span className="animate-pulse ml-1 text-blue-500 font-mono">|</span>
+                              )}
+                            </span>
+                            {isTypingComplete && (
+                              <div className={`flex items-center gap-1 ${
+                                isMobile 
+                                  ? '' 
+                                  : 'opacity-0 group-hover:opacity-100'
+                              } transition-opacity`}>
+                                {/* Десктопная версия */}
+                                {!isMobile && (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditItem(index)}
+                                      className={`p-1 rounded transition-colors ${
+                                        isDarkMode 
+                                          ? 'hover:bg-blue-600/20 text-blue-400' 
+                                          : 'hover:bg-blue-100 text-blue-600'
+                                      }`}
+                                      title="Редактировать"
+                                    >
+                                      <Edit2 className="w-3 h-3" />
+                                    </button>
+                                    <div className="relative add-dropdown-container">
+                                      <button
+                                        onClick={() => handleOpenAddDropdown(index)}
+                                        className={`p-1 rounded transition-colors ${
+                                          isDarkMode 
+                                            ? 'hover:bg-green-600/20 text-green-400' 
+                                            : 'hover:bg-green-100 text-green-600'
+                                        }`}
+                                        title="Добавить после"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                      </button>
+                                      
+                                      {/* Локальный выпадающий список */}
+                                      <AnimatePresence>
+                                        {showAddDropdown === index && (
+                                          <motion.div
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            className={`absolute top-full left-0 mt-1 py-1 rounded-lg shadow-lg border z-20 ${
+                                              isDarkMode 
+                                                ? 'bg-[#2d3748] border-[#4a5568]' 
+                                                : 'bg-white border-slate-200'
+                                            }`}
+                                          >
+                                            <button
+                                              onClick={() => handleAddItem(index, true)}
+                                              className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
+                                                isDarkMode 
+                                                  ? 'hover:bg-blue-600/20 text-blue-400' 
+                                                  : 'hover:bg-blue-100 text-blue-600'
+                                              }`}
+                                            >
+                                              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-blue-400' : 'bg-blue-600'}`}></div>
+                                              Глава
+                                            </button>
+                                            <button
+                                              onClick={() => handleAddItem(index, false)}
+                                              className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
+                                                isDarkMode 
+                                                  ? 'hover:bg-slate-600/20 text-white' 
+                                                  : 'hover:bg-slate-100 text-slate-700'
+                                              }`}
+                                            >
+                                              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-white' : 'bg-slate-700'}`}></div>
+                                              Подтема
+                                            </button>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </div>
+                                    <button
+                                      onClick={() => handleOpenDeleteModal(index)}
+                                      className={`p-1 rounded transition-colors ${
+                                        isDarkMode 
+                                          ? 'hover:bg-red-600/20 text-red-400' 
+                                          : 'hover:bg-red-100 text-red-600'
+                                      }`}
+                                      title="Удалить"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  </>
+                                )}
+                                
+                                {/* Мобильная версия */}
+                                {isMobile && (
+                                  <div className="relative mobile-menu-container">
+                                    <button
+                                      onClick={() => setMobileMenuIndex(mobileMenuIndex === index ? null : index)}
+                                      className={`p-2 rounded transition-colors ${
+                                        isDarkMode 
+                                          ? 'hover:bg-slate-600/20 text-slate-400' 
+                                          : 'hover:bg-slate-100 text-slate-600'
+                                      }`}
+                                    >
+                                      <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                    
+                                    {/* Мобильное меню */}
+                                    <AnimatePresence>
+                                      {mobileMenuIndex === index && (
+                                        <motion.div
+                                          initial={{ opacity: 0, scale: 0.95 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          exit={{ opacity: 0, scale: 0.95 }}
+                                          className={`absolute right-0 top-full mt-2 py-2 rounded-lg shadow-lg border z-10 ${
+                                            isDarkMode 
+                                              ? 'bg-[#2d3748] border-[#4a5568]' 
+                                              : 'bg-white border-slate-200'
+                                          }`}
+                                        >
+                                          <button
+                                            onClick={() => {
+                                              handleEditItem(index)
+                                              setMobileMenuIndex(null)
+                                            }}
+                                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ${
+                                              isDarkMode 
+                                                ? 'hover:bg-blue-600/20 text-blue-400' 
+                                                : 'hover:bg-blue-100 text-blue-600'
+                                            }`}
+                                          >
+                                            <Edit2 className="w-4 h-4" />
+                                            Редактировать
+                                          </button>
+                                          <button
+                                            onClick={() => handleOpenAddDropdown(index)}
+                                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ${
+                                              isDarkMode 
+                                                ? 'hover:bg-green-600/20 text-green-400' 
+                                                : 'hover:bg-green-100 text-green-600'
+                                            }`}
+                                          >
+                                            <Plus className="w-4 h-4" />
+                                            Добавить после
+                                          </button>
+                                          <button
+                                            onClick={() => handleOpenDeleteModal(index)}
+                                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ${
+                                              isDarkMode 
+                                                ? 'hover:bg-red-600/20 text-red-400' 
+                                                : 'hover:bg-red-100 text-red-600'
+                                            }`}
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                            Удалить
+                                          </button>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     )
@@ -488,7 +892,7 @@ export default function ResultPage() {
                   whileTap={isRegenerating ? {} : { scale: 0.98 }}
                 >
                   <RefreshCw className={`w-5 h-5 ${isRegenerating ? 'animate-spin' : ''}`} />
-                  {isRegenerating ? 'Перегенерация...' : 'Перегенерировать'}
+                  {isRegenerating ? t.result.actions.regenerating : t.result.actions.regenerate}
                 </motion.button>
 
                 <motion.button
@@ -498,7 +902,7 @@ export default function ResultPage() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <FileText className="w-5 h-5" />
-                  Создать работу
+                  {t.result.actions.createWork}
                 </motion.button>
               </div>
             </motion.div>
@@ -506,6 +910,61 @@ export default function ResultPage() {
         </motion.div>
       </main>
 
+
+      {/* Модальное окно удаления */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`rounded-2xl p-6 max-w-sm w-full ${
+                isDarkMode ? 'bg-[#181f38]' : 'bg-white'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-full bg-red-100">
+                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                  Подтвердить удаление
+                </h3>
+              </div>
+              
+              <p className={`text-sm mb-6 ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
+                Вы уверены, что хотите удалить этот элемент? Это действие нельзя отменить.
+              </p>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
+                    isDarkMode 
+                      ? 'bg-slate-700 hover:bg-slate-600 text-white' 
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
+                >
+                  Удалить
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

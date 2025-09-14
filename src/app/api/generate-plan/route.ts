@@ -17,6 +17,7 @@ interface GeneratePlanRequest {
   studentName?: string
   group?: string
   teacherName?: string
+  uiLanguage?: string
 }
 
 export async function POST(request: NextRequest) {
@@ -34,7 +35,8 @@ export async function POST(request: NextRequest) {
       university,
       studentName,
       group,
-      teacherName
+      teacherName,
+      uiLanguage
     } = body
 
     // Определяем тип работы на русском для промпта
@@ -58,7 +60,9 @@ export async function POST(request: NextRequest) {
       pages30_40: '30-40'
     }
 
-    const prompt = `Ты студент и должен создать подробный план для работы.
+    // Создаем промпт в зависимости от языка работы
+    const prompts = {
+      russian: `Ты студент и должен создать подробный план для работы.
 
 Параметры работы:
 - Тип работы: ${workTypeNames[workType as keyof typeof workTypeNames] || workType}
@@ -75,7 +79,7 @@ ${includeTitlePage ? `
   - Преподаватель: ${teacherName}
 ` : ''}
 
-Создай детальный план работы по теме "${topic}" для предмета "${subject}".
+Создай детальный план работы по теме "${topic}" для предмета "${subject}" на русском языке.
 
 ВАЖНО: Генерируй СТРОГО в указанной структуре:
 
@@ -108,14 +112,130 @@ ${includeTitlePage ? `
     "Заключение",
     "Список литературы"
   ]
+}`,
+
+      kyrgyz: `Сен студентсиң жана иш үчүн кеңири план түзүшүң керек.
+
+Иштин параметрлери:
+- Иштин түрү: ${workType === 'essay' ? 'реферат' : workType === 'coursework' ? 'курстук жумуш' : workType === 'srs' ? 'СӨЖ' : workType === 'report' ? 'доклад' : workType}
+- Иштин тили: ${workLanguage === 'russian' ? 'орусча' : workLanguage === 'kyrgyz' ? 'кыргызча' : workLanguage === 'english' ? 'англисче' : workLanguage}
+- Тема: "${topic}"
+- Предмет: ${subject}
+- Бет саны: ${pageCountNames[pageCount as keyof typeof pageCountNames] || pageCount} бет
+${requirements ? `- Кошумча талаптар: ${requirements}` : ''}
+${includeTitlePage ? `
+- Титулдук баракты кошуу:
+  - Университет: ${university}
+  - Студент: ${studentName}
+  - Топ: ${group}
+  - Мугалим: ${teacherName}
+` : ''}
+
+"${topic}" темасы боюнча "${subject}" предмети үчүн кыргызча кеңири иш планын түз.
+
+МААНИЛҮҮ: Көрсөтүлгөн структурада КАТУУ түзгүн:
+
+Структура төмөнкүдөй болушу керек:
+Киришүү
+1-Бөлүм. [Тема боюнча КОНКРЕТТҮҮ глава аталышы]
+1.1. [КОНКРЕТТҮҮ бөлүм аталышы]
+1.2. [КОНКРЕТТҮҮ бөлүм аталышы]  
+1.3. [КОНКРЕТТҮҮ бөлүм аталышы]
+2-Бөлүм. [Тема боюнча КОНКРЕТТҮҮ глава аталышы]
+2.1. [КОНКРЕТТҮҮ бөлүм аталышы]
+2.2. [КОНКРЕТТҮҮ бөлүм аталышы]
+2.3. [КОНКРЕТТҮҮ бөлүм аталышы]
+Корутунду
+Колдонулган адабияттардын тизмеси
+
+ЖӨӨН гана JSON форматында жооп бер:
+{
+  "title": "Тема боюнча конкреттүү иш аталышы",
+  "plan": [
+    "Киришүү",
+    "1-Бөлүм. Конкреттүү аталыш",
+    "1.1. Конкреттүү аталыш",
+    "1.2. Конкреттүү аталыш", 
+    "1.3. Конкреттүү аталыш",
+    "2-Бөлүм. Конкреттүү аталыш",
+    "2.1. Конкреттүү аталыш",
+    "2.2. Конкреттүү аталыш",
+    "2.3. Конкреттүү аталыш",
+    "Корутунду",
+    "Колдонулган адабияттардын тизмеси"
+  ]
+}`,
+
+      english: `You are a student and need to create a detailed work plan.
+
+Work parameters:
+- Work type: ${workType === 'essay' ? 'essay' : workType === 'coursework' ? 'coursework' : workType === 'srs' ? 'independent work' : workType === 'report' ? 'report' : workType}
+- Work language: ${workLanguage === 'russian' ? 'Russian' : workLanguage === 'kyrgyz' ? 'Kyrgyz' : workLanguage === 'english' ? 'English' : workLanguage}
+- Topic: "${topic}"
+- Subject: ${subject}
+- Number of pages: ${pageCountNames[pageCount as keyof typeof pageCountNames] || pageCount} pages
+${requirements ? `- Additional requirements: ${requirements}` : ''}
+${includeTitlePage ? `
+- Include title page:
+  - University: ${university}
+  - Student: ${studentName}
+  - Group: ${group}
+  - Teacher: ${teacherName}
+` : ''}
+
+Create a detailed work plan on the topic "${topic}" for the subject "${subject}" in English.
+
+IMPORTANT: Generate STRICTLY in the specified structure:
+
+Structure should be:
+Introduction
+Chapter 1. [SPECIFIC chapter title by topic]
+1.1. [SPECIFIC subsection title]
+1.2. [SPECIFIC subsection title]
+1.3. [SPECIFIC subsection title]
+Chapter 2. [SPECIFIC chapter title by topic]
+2.1. [SPECIFIC subsection title]
+2.2. [SPECIFIC subsection title]
+2.3. [SPECIFIC subsection title]
+Conclusion
+References
+
+Answer ONLY in JSON format:
+{
+  "title": "Specific work title by topic",
+  "plan": [
+    "Introduction",
+    "Chapter 1. Specific title",
+    "1.1. Specific title",
+    "1.2. Specific title",
+    "1.3. Specific title", 
+    "Chapter 2. Specific title",
+    "2.1. Specific title",
+    "2.2. Specific title",
+    "2.3. Specific title",
+    "Conclusion",
+    "References"
+  ]
 }`
+    }
+
+    const prompt = prompts[workLanguage as keyof typeof prompts] || prompts.russian
+
+    // Определяем system prompt в зависимости от языка интерфейса  
+    const systemPrompts = {
+      ru: "Ты помощник для создания академических планов работ. Всегда отвечай только в указанном JSON формате без дополнительного текста.",
+      ky: "Сен академиялык иш планын түзүү үчүн жардамчысың. Ар дайым көрсөтүлгөн JSON форматында гана кошумча текстсиз жооп бер.",
+      en: "You are an assistant for creating academic work plans. Always respond only in the specified JSON format without additional text."
+    }
+
+    const systemPrompt = systemPrompts[uiLanguage as keyof typeof systemPrompts] || systemPrompts.ru
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: "Ты помощник для создания академических планов работ. Всегда отвечай только в указанном JSON формате без дополнительного текста."
+          content: systemPrompt
         },
         {
           role: "user",

@@ -530,6 +530,10 @@ export interface Translations {
   workGenerator: {
     title: string
     subtitle: string
+    generating: {
+      title: string
+      subtitle: string
+    }
     form: {
       workType: string
       workLanguage: string
@@ -571,6 +575,31 @@ export interface Translations {
       studentNameRequired: string
       groupRequired: string
       teacherNameRequired: string
+    }
+  }
+
+  // Result page
+  result: {
+    workInfo: {
+      type: string
+      language: string
+      pages: string
+      subject: string
+    }
+    planGeneration: {
+      generating: string
+      completed: string
+    }
+    actions: {
+      regenerate: string
+      regenerating: string
+      createWork: string
+    }
+    workTypeNames: {
+      essay: string
+      coursework: string
+      srs: string
+      report: string
     }
   }
   
@@ -1110,6 +1139,10 @@ const russianTranslations: Translations = {
   workGenerator: {
     title: 'Создание плана работы',
     subtitle: 'Заполните параметры для генерации качественного плана вашей работы',
+    generating: {
+      title: 'Генерируется план работы',
+      subtitle: 'ИИ создает индивидуальный план специально для вашей работы...'
+    },
     form: {
       workType: 'Тип работы',
       workLanguage: 'Язык работы',
@@ -1151,6 +1184,29 @@ const russianTranslations: Translations = {
       studentNameRequired: 'ФИО студента обязательно',
       groupRequired: 'Группа обязательна',
       teacherNameRequired: 'ФИО преподавателя обязательно'
+    }
+  },
+  result: {
+    workInfo: {
+      type: 'Тип:',
+      language: 'Язык:',
+      pages: 'Страниц:',
+      subject: 'Предмет:'
+    },
+    planGeneration: {
+      generating: 'ИИ генерирует план...',
+      completed: 'План работы'
+    },
+    actions: {
+      regenerate: 'Перегенерировать',
+      regenerating: 'Перегенерация...',
+      createWork: 'Создать работу'
+    },
+    workTypeNames: {
+      essay: 'Реферат',
+      coursework: 'Курсовая работа',
+      srs: 'СРС',
+      report: 'Доклад'
     }
   },
   footer: {
@@ -1688,6 +1744,10 @@ const kyrgyzTranslations: Translations = {
   workGenerator: {
     title: 'Иштин планын түзүү',
     subtitle: 'Ишиңиздин сапаттуу планын генерациялоо үчүн параметрлерди толтуруңуз',
+    generating: {
+      title: 'Иштин планы генерацияланууда',
+      subtitle: 'ИИ сиздин жумушуңуз үчүн атайын жеке план түзүп жатат...'
+    },
     form: {
       workType: 'Иштин түрү',
       workLanguage: 'Иштин тили',
@@ -1729,6 +1789,29 @@ const kyrgyzTranslations: Translations = {
       studentNameRequired: 'Студенттин аты-жөнү милдеттүү',
       groupRequired: 'Студенттин тобу милдеттүү',
       teacherNameRequired: 'Мугалимдин аты-жөнү милдеттүү'
+    }
+  },
+  result: {
+    workInfo: {
+      type: 'Түрү:',
+      language: 'Тили:',
+      pages: 'Бет саны:',
+      subject: 'Предмет:'
+    },
+    planGeneration: {
+      generating: 'ИИ план түзүп жатат...',
+      completed: 'Жумуш планы'
+    },
+    actions: {
+      regenerate: 'Кайра генерациялоо',
+      regenerating: 'Кайра генерацияланууда...',
+      createWork: 'Жумуш түзүү'
+    },
+    workTypeNames: {
+      essay: 'Реферат',
+      coursework: 'Курстук жумуш',
+      srs: 'СӨЖ',
+      report: 'Доклад'
     }
   },
   footer: {
@@ -2266,6 +2349,10 @@ const englishTranslations: Translations = {
   workGenerator: {
     title: 'Create Work Plan',
     subtitle: 'Fill in the parameters to generate a quality plan for your work',
+    generating: {
+      title: 'Generating Work Plan',
+      subtitle: 'AI is creating a personalized plan specifically for your work...'
+    },
     form: {
       workType: 'Work Type',
       workLanguage: 'Work Language',
@@ -2307,6 +2394,29 @@ const englishTranslations: Translations = {
       studentNameRequired: 'Student name is required',
       groupRequired: 'Student group is required',
       teacherNameRequired: 'Teacher name is required'
+    }
+  },
+  result: {
+    workInfo: {
+      type: 'Type:',
+      language: 'Language:',
+      pages: 'Pages:',
+      subject: 'Subject:'
+    },
+    planGeneration: {
+      generating: 'AI is generating plan...',
+      completed: 'Work Plan'
+    },
+    actions: {
+      regenerate: 'Regenerate',
+      regenerating: 'Regenerating...',
+      createWork: 'Create Work'
+    },
+    workTypeNames: {
+      essay: 'Essay',
+      coursework: 'Coursework',
+      srs: 'Independent Work',
+      report: 'Report'
     }
   },
   footer: {
