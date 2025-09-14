@@ -160,7 +160,7 @@ export default function ResultPage() {
         })
         
         // Скорость печатания
-        const delay = currentItem[charIndex - 1] === ' ' ? 25 : 35
+        const delay = currentItem[charIndex - 1] === ' ' ? 10 : 15
         animationId = setTimeout(typeNextChar, delay)
       } else {
         // Завершили текущий элемент, переходим к следующему

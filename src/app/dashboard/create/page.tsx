@@ -50,6 +50,7 @@ export default function CreateWorkPage() {
   const t = getTranslation(language)
   
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     workType: searchParams?.get('type') || 'essay',
     workLanguage: 'russian',
@@ -130,6 +131,13 @@ export default function CreateWorkPage() {
       const savedTheme = getThemeCookie()
       setIsDarkMode(savedTheme)
       
+      // Определяем мобильное устройство
+      const checkIsMobile = () => {
+        setIsMobile(window.innerWidth < 768)
+      }
+      checkIsMobile()
+      window.addEventListener('resize', checkIsMobile)
+      
       // Загружаем сохраненные данные формы
       const savedFormData = loadFormData()
       if (savedFormData) {
@@ -139,6 +147,10 @@ export default function CreateWorkPage() {
           // Сохраняем workType из URL параметра, если он есть
           workType: searchParams?.get('type') || savedFormData.workType || 'essay'
         }))
+      }
+
+      return () => {
+        window.removeEventListener('resize', checkIsMobile)
       }
     }
   }, [isClient, searchParams])
@@ -744,12 +756,12 @@ export default function CreateWorkPage() {
           >
             <div className="flex flex-col items-center">
               <div className="mb-4">
-                <AIOrb size={200} />
+                <AIOrb size={isMobile ? 120 : 200} />
               </div>
               <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                 Генерируется план работы
               </h3>
-              <p className={`${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
+              <p className={`text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
                 ИИ создает индивидуальный план специально для вашей работы...
               </p>
             </div>
