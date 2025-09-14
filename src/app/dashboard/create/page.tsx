@@ -19,6 +19,7 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getTranslation } from '@/translations'
 import LanguageSelector from '@/components/LanguageSelector'
+import AIOrb from '@/components/ui/AIOrb'
 
 interface FormData {
   workType: string
@@ -63,6 +64,7 @@ export default function CreateWorkPage() {
     teacherName: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isGenerating, setIsGenerating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Функции для работы с темой (такие же как в дашборде)
@@ -89,12 +91,57 @@ export default function CreateWorkPage() {
     }
   }
 
+  // Функции для работы с localStorage
+  const saveFormData = (data: FormData) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('studai-work-generator-form', JSON.stringify(data))
+      } catch (error) {
+        console.error('Error saving form data:', error)
+      }
+    }
+  }
+
+  const loadFormData = (): Partial<FormData> | null => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('studai-work-generator-form')
+        return saved ? JSON.parse(saved) : null
+      } catch (error) {
+        console.error('Error loading form data:', error)
+        return null
+      }
+    }
+    return null
+  }
+
+  const clearFormData = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('studai-work-generator-form')
+      } catch (error) {
+        console.error('Error clearing form data:', error)
+      }
+    }
+  }
+
   useEffect(() => {
     if (isClient) {
       const savedTheme = getThemeCookie()
       setIsDarkMode(savedTheme)
+      
+      // Загружаем сохраненные данные формы
+      const savedFormData = loadFormData()
+      if (savedFormData) {
+        setFormData(prevData => ({
+          ...prevData,
+          ...savedFormData,
+          // Сохраняем workType из URL параметра, если он есть
+          workType: searchParams?.get('type') || savedFormData.workType || 'essay'
+        }))
+      }
     }
-  }, [isClient])
+  }, [isClient, searchParams])
 
   useEffect(() => {
     if (status === 'loading') return
@@ -103,6 +150,17 @@ export default function CreateWorkPage() {
       return
     }
   }, [session, status, router])
+
+  // Автоматическое сохранение при изменении данных формы
+  useEffect(() => {
+    if (isClient) {
+      const timeoutId = setTimeout(() => {
+        saveFormData(formData)
+      }, 500) // Debounce 500ms
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [formData, isClient])
 
   if (!isClient) {
     return (
@@ -209,19 +267,34 @@ export default function CreateWorkPage() {
       return
     }
 
-    setIsSubmitting(true)
+    setIsGenerating(true)
     
-    // Здесь будет логика отправки данных на сервер
     try {
-      // Симуляция запроса
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Отправляем запрос к API для генерации плана
+      const response = await fetch('/api/generate-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate plan')
+      }
+
+      const result = await response.json()
       
-      // После успешной генерации перенаправляем на результат
+      // Сохраняем результат в localStorage
+      localStorage.setItem('studai-generated-plan', JSON.stringify(result))
+      
+      // Перенаправляем на страницу результатов
       router.push('/dashboard/result')
+      
     } catch (error) {
       console.error('Error generating work plan:', error)
-    } finally {
-      setIsSubmitting(false)
+      setIsGenerating(false)
+      // Здесь можно добавить уведомление об ошибке
     }
   }
 
@@ -235,6 +308,7 @@ export default function CreateWorkPage() {
   }
 
   return (
+    <>
     <div className={`min-h-screen relative transition-colors duration-300 ${
       isDarkMode 
         ? 'bg-[#050c26]' 
@@ -622,30 +696,67 @@ export default function CreateWorkPage() {
 
             {/* Submit Button */}
             <div className="mt-8 flex justify-center">
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                className={`px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 ${
-                  isSubmitting
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
-                } min-w-[200px]`}
-                whileHover={isSubmitting ? {} : { scale: 1.02 }}
-                whileTap={isSubmitting ? {} : { scale: 0.98 }}
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Обработка...
-                  </div>
-                ) : (
-                  t.workGenerator.form.generateButton
-                )}
-              </motion.button>
+             <motion.button
+             type="submit"
+             className="group relative px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 bg-blue-600 hover:bg-blue-700 hover:shadow-lg min-w-[200px] flex items-center justify-center gap-3"
+             whileHover={{ scale: 1.02 }}
+             whileTap={{ scale: 0.98 }}
+             >
+               <svg
+                 className="animate-pulse text-white"
+                 height="24"
+                 width="24"
+                 viewBox="0 0 24 24"
+                 fill="currentColor"
+               >
+                 <path
+                   fillRule="evenodd"
+                   clipRule="evenodd"
+                   d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z"
+                 ></path>
+               </svg>
+               <span>
+                 {t.workGenerator.form.generateButton}
+               </span>
+             </motion.button>
             </div>
           </motion.form>
         </motion.div>
       </main>
     </div>
+
+    {/* Generating Animation */}
+    <AnimatePresence>
+      {isGenerating && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className={`p-8 rounded-3xl max-w-lg mx-4 text-center ${
+              isDarkMode ? 'bg-[#181f38]' : 'bg-white'
+            }`}
+          >
+            <div className="flex flex-col items-center">
+              <div className="mb-4">
+                <AIOrb size={200} />
+              </div>
+              <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                Генерируется план работы
+              </h3>
+              <p className={`${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
+                ИИ создает индивидуальный план специально для вашей работы...
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   )
 }
