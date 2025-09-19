@@ -267,11 +267,12 @@ Answer ONLY in JSON format:
 
     // Конвертируем план в новый формат с типами
     const convertPlanToNewFormat = (plan: string[]) => {
-      return plan.map((item) => {
+      return plan.map((item, index) => {
         const isChapter = item.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.)/)
         return {
           text: item,
-          type: isChapter ? 'chapter' : 'subsection'
+          type: isChapter ? 'chapter' : 'subsection',
+          id: `item-${index}-${Date.now()}`
         }
       })
     }

@@ -18,8 +18,28 @@ import {
   Save,
   X,
   MoreVertical,
-  AlertTriangle
+  AlertTriangle,
+  GripVertical
 } from 'lucide-react'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getTranslation } from '@/translations'
 import LanguageSelector from '@/components/LanguageSelector'
@@ -27,6 +47,299 @@ import LanguageSelector from '@/components/LanguageSelector'
 interface PlanItem {
   text: string
   type: 'chapter' | 'subsection'
+  id: string
+}
+
+// Компонент для перетаскиваемого элемента плана
+interface SortablePlanItemProps {
+  item: PlanItem
+  index: number
+  isDarkMode: boolean
+  isMobile: boolean
+  isTypingComplete: boolean
+  isCurrentItem: boolean
+  editingIndex: number | null
+  editingText: string
+  onEditItem: (index: number) => void
+  onSaveItem: () => void
+  onCancelEdit: () => void
+  onDeleteItem: (index: number) => void
+  onOpenAddDropdown: (index: number) => void
+  onOpenDeleteModal: (index: number) => void
+  onSetEditingText: (text: string) => void
+  onAddItem: (index: number, isChapter: boolean) => void
+  showAddDropdown: number | null
+  mobileMenuIndex: number | null
+  onSetMobileMenuIndex: (index: number | null) => void
+  onSetShowMobileMenuModal: (show: boolean) => void
+}
+
+const SortablePlanItem = ({
+  item,
+  index,
+  isDarkMode,
+  isMobile,
+  isTypingComplete,
+  isCurrentItem,
+  editingIndex,
+  editingText,
+  onEditItem,
+  onSaveItem,
+  onCancelEdit,
+  onDeleteItem,
+  onOpenAddDropdown,
+  onOpenDeleteModal,
+  onSetEditingText,
+  onAddItem,
+  showAddDropdown,
+  mobileMenuIndex,
+  onSetMobileMenuIndex,
+  onSetShowMobileMenuModal
+}: SortablePlanItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: isDragging ? 'none' : transition,
+  }
+
+  const isChapter = item.type === 'chapter'
+  const isSubsection = item.type === 'subsection'
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      data-plan-item={index}
+      className={`group relative p-2 md:p-3 rounded-lg transition-colors duration-150 cursor-grab active:cursor-grabbing select-none ${
+        isDarkMode 
+          ? 'bg-[#0f172a]/40 hover:bg-[#0f172a]/60' 
+          : 'bg-slate-50/50 hover:bg-slate-100/70'
+      } ${
+        isDragging ? 'opacity-50 shadow-lg z-50' : ''
+      } ${
+        isChapter
+          ? `text-sm md:text-lg font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`
+          : `ml-4 text-sm md:text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`
+      }`}
+      onMouseDown={(e) => {
+        // Предотвращаем выделение текста
+        e.preventDefault()
+      }}
+      onDragStart={(e) => {
+        // Предотвращаем стандартное поведение перетаскивания
+        e.preventDefault()
+      }}
+    >
+      {editingIndex === index ? (
+        // Режим редактирования
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={editingText}
+            onChange={(e) => onSetEditingText(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            className={`flex-1 px-2 py-1 rounded border ${
+              isDarkMode 
+                ? 'bg-[#2d3748] border-[#4a5568] text-white' 
+                : 'bg-white border-slate-300 text-slate-900'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onSaveItem()
+              if (e.key === 'Escape') onCancelEdit()
+            }}
+          />
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onSaveItem()
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            className={`p-1 rounded transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-green-600/20 text-green-400' 
+                : 'hover:bg-green-100 text-green-600'
+            }`}
+          >
+            <Save className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onCancelEdit()
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            className={`p-1 rounded transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-red-600/20 text-red-400' 
+                : 'hover:bg-red-100 text-red-600'
+            }`}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        // Режим просмотра
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 flex-1">
+            {/* Drag handle - только иконка */}
+            {isTypingComplete && (
+              <div className="p-1 rounded transition-colors text-slate-400">
+                <GripVertical className="w-4 h-4" />
+              </div>
+            )}
+            
+            <span className="flex-1">
+              {item.text}
+              {isCurrentItem && (
+                <span className="animate-pulse ml-1 text-blue-500 font-mono">|</span>
+              )}
+            </span>
+          </div>
+          
+          {isTypingComplete && (
+            <div className={`flex items-center gap-1 ${
+              isMobile 
+                ? '' 
+                : 'opacity-0 group-hover:opacity-100'
+            } transition-opacity`}>
+              {/* Десктопная версия */}
+              {!isMobile && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onEditItem(index)
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`p-1 rounded transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-blue-600/20 text-blue-400' 
+                        : 'hover:bg-blue-100 text-blue-600'
+                    }`}
+                    title="Редактировать"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                  <div className="relative add-dropdown-container">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onOpenAddDropdown(index)
+                      }}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className={`p-1 rounded transition-colors ${
+                        isDarkMode 
+                          ? 'hover:bg-green-600/20 text-green-400' 
+                          : 'hover:bg-green-100 text-green-600'
+                      }`}
+                      title="Добавить после"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                    
+                    {/* Локальный выпадающий список */}
+                    <AnimatePresence>
+                      {showAddDropdown === index && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className={`absolute top-full left-0 mt-1 py-1 rounded-lg shadow-lg border z-20 ${
+                            isDarkMode 
+                              ? 'bg-[#2d3748] border-[#4a5568]' 
+                              : 'bg-white border-slate-200'
+                          }`}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onAddItem(index, true)
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
+                              isDarkMode 
+                                ? 'hover:bg-blue-600/20 text-blue-400' 
+                                : 'hover:bg-blue-100 text-blue-600'
+                            }`}
+                          >
+                            <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-blue-400' : 'bg-blue-600'}`}></div>
+                            Глава
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onAddItem(index, false)
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
+                              isDarkMode 
+                                ? 'hover:bg-slate-600/20 text-white' 
+                                : 'hover:bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-white' : 'bg-slate-700'}`}></div>
+                            Подтема
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onOpenDeleteModal(index)
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`p-1 rounded transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-red-600/20 text-red-400' 
+                        : 'hover:bg-red-100 text-red-600'
+                    }`}
+                    title="Удалить"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </>
+              )}
+              
+              {/* Мобильная версия */}
+              {isMobile && (
+                <div className="relative mobile-menu-container">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onSetMobileMenuIndex(index)
+                      onSetShowMobileMenuModal(true)
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`p-2 rounded transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-slate-600/20 text-slate-400' 
+                        : 'hover:bg-slate-100 text-slate-600'
+                    }`}
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 interface GeneratedPlan {
@@ -78,6 +391,18 @@ export default function ResultPage() {
   const [newItemIndex, setNewItemIndex] = useState<number | null>(null)
   const [isFirstGeneration, setIsFirstGeneration] = useState(false)
 
+  // Сенсоры для перетаскивания
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
   // Функция для синхронизации данных с localStorage
   const syncWithLocalStorage = (updatedPlan: PlanItem[]) => {
     if (generatedPlan) {
@@ -87,6 +412,31 @@ export default function ResultPage() {
       }
       localStorage.setItem('studai-generated-plan', JSON.stringify(updatedGeneratedPlan))
       setGeneratedPlan(updatedGeneratedPlan)
+    }
+  }
+
+  // Обработчик изменения порядка элементов
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    // Восстанавливаем выделение текста
+    document.body.style.userSelect = ''
+
+    if (over && active.id !== over.id) {
+      const oldIndex = typedItems.findIndex((item) => item.id === active.id)
+      const newIndex = typedItems.findIndex((item) => item.id === over.id)
+
+      const newItems = arrayMove(typedItems, oldIndex, newIndex)
+      setTypedItems(newItems)
+      
+      // Обновляем также editablePlan если он существует
+      if (editablePlan.length > 0) {
+        const newEditablePlan = arrayMove(editablePlan, oldIndex, newIndex)
+        setEditablePlan(newEditablePlan)
+        syncWithLocalStorage(newEditablePlan)
+      } else {
+        syncWithLocalStorage(newItems)
+      }
     }
   }
 
@@ -146,13 +496,20 @@ export default function ResultPage() {
           if (planData.plan && Array.isArray(planData.plan) && planData.plan.length > 0) {
             if (typeof planData.plan[0] === 'string') {
               // Старый формат - конвертируем в новый
-              planData.plan = planData.plan.map((item: string) => {
+              planData.plan = planData.plan.map((item: string, index: number) => {
                 const isChapter = item.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.|Новая глава)/)
                 return {
                   text: item,
-                  type: isChapter ? 'chapter' : 'subsection'
+                  type: isChapter ? 'chapter' : 'subsection',
+                  id: `item-${index}-${Date.now()}`
                 }
               })
+            } else if (planData.plan[0] && !planData.plan[0].id) {
+              // Новый формат без ID - добавляем ID
+              planData.plan = planData.plan.map((item: any, index: number) => ({
+                ...item,
+                id: item.id || `item-${index}-${Date.now()}`
+              }))
             }
           }
           
@@ -164,9 +521,9 @@ export default function ResultPage() {
           
           if (shouldAnimate) {
             // Запускаем эффект печатания только при первой генерации
-            setTimeout(() => {
-              startTypingEffect(planData)
-            }, 500)
+          setTimeout(() => {
+            startTypingEffect(planData)
+          }, 500)
           } else {
             // Сразу отображаем план без анимации
             const planItems = planData.plan
@@ -222,7 +579,8 @@ export default function ResultPage() {
     // Инициализируем массив с пустыми объектами
     const initialItems = new Array(planItems.length).fill(null).map((_, index) => ({
       text: '',
-      type: planItems[index].type
+      type: planItems[index].type,
+      id: planItems[index].id
     }))
     setTypedItems(initialItems)
     setCurrentItemIndex(0)
@@ -253,7 +611,8 @@ export default function ResultPage() {
           const newItems = [...prev]
           newItems[itemIndex] = {
             text: partialText,
-            type: currentItem.type
+            type: currentItem.type,
+            id: currentItem.id
           }
           return newItems
         })
@@ -262,12 +621,21 @@ export default function ResultPage() {
         setTimeout(() => {
           const currentElement = document.querySelector(`[data-plan-item="${itemIndex}"]`)
           if (currentElement) {
-            currentElement.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center' 
-            })
+            // Прокручиваем к элементу с отступом от верха
+            const elementRect = currentElement.getBoundingClientRect()
+            const viewportHeight = window.innerHeight
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+            
+            // Если элемент находится в нижней половине экрана, прокручиваем
+            if (elementRect.bottom > viewportHeight * 0.7) {
+              currentElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+              })
+            }
           }
-        }, 100)
+        }, 50)
         
         // Скорость печатания
         const delay = currentItem.text[charIndex - 1] === ' ' ? 10 : 15
@@ -278,10 +646,40 @@ export default function ResultPage() {
         setCurrentItemIndex(itemIndex)
         charIndex = 0
         
+        // Прокрутка к новому элементу при переходе
+        setTimeout(() => {
+          const nextElement = document.querySelector(`[data-plan-item="${itemIndex}"]`)
+          if (nextElement) {
+            const elementRect = nextElement.getBoundingClientRect()
+            const viewportHeight = window.innerHeight
+            
+            // Если следующий элемент находится в нижней половине экрана, прокручиваем
+            if (elementRect.bottom > viewportHeight * 0.6) {
+              nextElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+              })
+            }
+          }
+        }, 10)
+        
         // Небольшая пауза только для плавности (50ms)
         animationId = setTimeout(typeNextChar, 50)
       }
     }
+    
+    // Прокрутка к началу плана перед началом печати
+    setTimeout(() => {
+      const firstElement = document.querySelector('[data-plan-item="0"]')
+      if (firstElement) {
+        firstElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        })
+      }
+    }, 200)
     
     // Начинаем печатание с задержкой
     animationId = setTimeout(typeNextChar, 500)
@@ -335,7 +733,8 @@ export default function ResultPage() {
       }
       updatedPlan[editingIndex] = {
         text: editingText,
-        type: updatedPlan[editingIndex]?.type || 'subsection'
+        type: updatedPlan[editingIndex]?.type || 'subsection',
+        id: updatedPlan[editingIndex]?.id || `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       }
       setEditablePlan(updatedPlan)
       
@@ -343,7 +742,8 @@ export default function ResultPage() {
       const updatedTypedItems = [...typedItems]
       updatedTypedItems[editingIndex] = {
         text: editingText,
-        type: updatedTypedItems[editingIndex]?.type || 'subsection'
+        type: updatedTypedItems[editingIndex]?.type || 'subsection',
+        id: updatedTypedItems[editingIndex]?.id || `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       }
       setTypedItems(updatedTypedItems)
       
@@ -452,7 +852,8 @@ export default function ResultPage() {
     
     const newItem: PlanItem = {
       text: isChapter ? 'Новая глава' : 'Новый подраздел',
-      type: isChapter ? 'chapter' : 'subsection'
+      type: isChapter ? 'chapter' : 'subsection',
+      id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     }
     
     // Определяем правильную позицию для вставки
@@ -723,190 +1124,59 @@ export default function ResultPage() {
                 )}
               </div>
                 
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  onDragStart={() => {
+                    // Отключаем выделение текста при начале перетаскивания
+                    document.body.style.userSelect = 'none'
+                  }}
+                  onDragCancel={() => {
+                    // Восстанавливаем выделение текста при отмене
+                    document.body.style.userSelect = ''
+                  }}
+                >
+                  <SortableContext
+                    items={typedItems.map(item => item.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
                 <div className="space-y-2">
                   {typedItems.map((item, index) => {
                     // Показываем только непустые элементы
-                    if (!item || !item.text) return null
+                        if (!item || !item.text) return null
                     
-                    // Определяем является ли элемент главой или разделом
-                    const isChapter = item.type === 'chapter'
-                    const isSubsection = item.type === 'subsection'
                     const isCurrentItem = index === currentItemIndex && !isTypingComplete
                     
                     return (
-                      <div
-                        key={`item-${index}`}
-                        data-plan-item={index}
-                        className={`group relative p-2 md:p-3 rounded-lg transition-all duration-200 ${
-                          isDarkMode 
-                            ? 'bg-[#0f172a]/40 hover:bg-[#0f172a]/60' 
-                            : 'bg-slate-50/50 hover:bg-slate-100/70'
-                        } ${
-                          isChapter
-                            ? `text-sm md:text-lg font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`
-                            : `ml-4 text-sm md:text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`
-                        }`}
-                      >
-                        {editingIndex === index ? (
-                          // Режим редактирования
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editingText}
-                              onChange={(e) => setEditingText(e.target.value)}
-                              className={`flex-1 px-2 py-1 rounded border ${
-                                isDarkMode 
-                                  ? 'bg-[#2d3748] border-[#4a5568] text-white' 
-                                  : 'bg-white border-slate-300 text-slate-900'
-                              } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                              autoFocus
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleSaveItem()
-                                if (e.key === 'Escape') handleCancelEdit()
-                              }}
-                            />
-                            <button
-                              onClick={handleSaveItem}
-                              className={`p-1 rounded transition-colors ${
-                                isDarkMode 
-                                  ? 'hover:bg-green-600/20 text-green-400' 
-                                  : 'hover:bg-green-100 text-green-600'
-                              }`}
-                            >
-                              <Save className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={handleCancelEdit}
-                              className={`p-1 rounded transition-colors ${
-                                isDarkMode 
-                                  ? 'hover:bg-red-600/20 text-red-400' 
-                                  : 'hover:bg-red-100 text-red-600'
-                              }`}
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          // Режим просмотра
-                          <div className="flex items-center justify-between">
-                            <span className="flex-1">
-                              {item.text}
-                              {isCurrentItem && (
-                                <span className="animate-pulse ml-1 text-blue-500 font-mono">|</span>
-                              )}
-                            </span>
-                            {isTypingComplete && (
-                              <div className={`flex items-center gap-1 ${
-                                isMobile 
-                                  ? '' 
-                                  : 'opacity-0 group-hover:opacity-100'
-                              } transition-opacity`}>
-                                {/* Десктопная версия */}
-                                {!isMobile && (
-                                  <>
-                                    <button
-                                      onClick={() => handleEditItem(index)}
-                                      className={`p-1 rounded transition-colors ${
-                                        isDarkMode 
-                                          ? 'hover:bg-blue-600/20 text-blue-400' 
-                                          : 'hover:bg-blue-100 text-blue-600'
-                                      }`}
-                                      title="Редактировать"
-                                    >
-                                      <Edit2 className="w-3 h-3" />
-                                    </button>
-                                    <div className="relative add-dropdown-container">
-                                      <button
-                                        onClick={() => handleOpenAddDropdown(index)}
-                                        className={`p-1 rounded transition-colors ${
-                                          isDarkMode 
-                                            ? 'hover:bg-green-600/20 text-green-400' 
-                                            : 'hover:bg-green-100 text-green-600'
-                                        }`}
-                                        title="Добавить после"
-                                      >
-                                        <Plus className="w-3 h-3" />
-                                      </button>
-                                      
-                                      {/* Локальный выпадающий список */}
-                                      <AnimatePresence>
-                                        {showAddDropdown === index && (
-                                          <motion.div
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.95 }}
-                                            className={`absolute top-full left-0 mt-1 py-1 rounded-lg shadow-lg border z-20 ${
-                                              isDarkMode 
-                                                ? 'bg-[#2d3748] border-[#4a5568]' 
-                                                : 'bg-white border-slate-200'
-                                            }`}
-                                          >
-                                            <button
-                                              onClick={() => handleAddItem(index, true)}
-                                              className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
-                                                isDarkMode 
-                                                  ? 'hover:bg-blue-600/20 text-blue-400' 
-                                                  : 'hover:bg-blue-100 text-blue-600'
-                                              }`}
-                                            >
-                                              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-blue-400' : 'bg-blue-600'}`}></div>
-                                              Глава
-                                            </button>
-                                            <button
-                                              onClick={() => handleAddItem(index, false)}
-                                              className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
-                                                isDarkMode 
-                                                  ? 'hover:bg-slate-600/20 text-white' 
-                                                  : 'hover:bg-slate-100 text-slate-700'
-                                              }`}
-                                            >
-                                              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-white' : 'bg-slate-700'}`}></div>
-                                              Подтема
-                                            </button>
-                                          </motion.div>
-                                        )}
-                                      </AnimatePresence>
-                                    </div>
-                                    <button
-                                      onClick={() => handleOpenDeleteModal(index)}
-                                      className={`p-1 rounded transition-colors ${
-                                        isDarkMode 
-                                          ? 'hover:bg-red-600/20 text-red-400' 
-                                          : 'hover:bg-red-100 text-red-600'
-                                      }`}
-                                      title="Удалить"
-                                    >
-                                      <Trash2 className="w-3 h-3" />
-                                    </button>
-                                  </>
-                                )}
-                                
-                                {/* Мобильная версия */}
-                                {isMobile && (
-                                  <div className="relative mobile-menu-container">
-                                    <button
-                                      onClick={() => {
-                                        setMobileMenuIndex(index)
-                                        setShowMobileMenuModal(true)
-                                      }}
-                                      className={`p-2 rounded transition-colors ${
-                                        isDarkMode 
-                                          ? 'hover:bg-slate-600/20 text-slate-400' 
-                                          : 'hover:bg-slate-100 text-slate-600'
-                                      }`}
-                                    >
-                                      <MoreVertical className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                          <SortablePlanItem
+                            key={item.id}
+                            item={item}
+                            index={index}
+                            isDarkMode={isDarkMode}
+                            isMobile={isMobile}
+                            isTypingComplete={isTypingComplete}
+                            isCurrentItem={isCurrentItem}
+                            editingIndex={editingIndex}
+                            editingText={editingText}
+                            onEditItem={handleEditItem}
+                            onSaveItem={handleSaveItem}
+                            onCancelEdit={handleCancelEdit}
+                            onDeleteItem={handleDeleteItem}
+                            onOpenAddDropdown={handleOpenAddDropdown}
+                            onOpenDeleteModal={handleOpenDeleteModal}
+                            onSetEditingText={setEditingText}
+                            onAddItem={handleAddItem}
+                            showAddDropdown={showAddDropdown}
+                            mobileMenuIndex={mobileMenuIndex}
+                            onSetMobileMenuIndex={setMobileMenuIndex}
+                            onSetShowMobileMenuModal={setShowMobileMenuModal}
+                          />
                     )
                   })}
                 </div>
+                  </SortableContext>
+                </DndContext>
             </motion.div>
           )}
 
