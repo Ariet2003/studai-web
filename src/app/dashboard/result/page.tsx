@@ -32,6 +32,7 @@ interface PlanItem {
 interface GeneratedPlan {
   title: string
   plan: PlanItem[]
+  isFirstGeneration?: boolean
   metadata: {
     workType: string
     workLanguage: string
@@ -75,6 +76,7 @@ export default function ResultPage() {
   const [showMobileAddModal, setShowMobileAddModal] = useState(false)
   const [mobileAddIndex, setMobileAddIndex] = useState<number | null>(null)
   const [newItemIndex, setNewItemIndex] = useState<number | null>(null)
+  const [isFirstGeneration, setIsFirstGeneration] = useState(false)
 
   // Функция для синхронизации данных с localStorage
   const syncWithLocalStorage = (updatedPlan: PlanItem[]) => {
@@ -156,10 +158,21 @@ export default function ResultPage() {
           
           setGeneratedPlan(planData)
           
-          // Запускаем эффект печатания
-          setTimeout(() => {
-            startTypingEffect(planData)
-          }, 500)
+          // Проверяем, нужно ли запускать анимацию печати
+          const shouldAnimate = planData.isFirstGeneration === true
+          setIsFirstGeneration(shouldAnimate)
+          
+          if (shouldAnimate) {
+            // Запускаем эффект печатания только при первой генерации
+            setTimeout(() => {
+              startTypingEffect(planData)
+            }, 500)
+          } else {
+            // Сразу отображаем план без анимации
+            const planItems = planData.plan
+            setTypedItems(planItems)
+            setIsTypingComplete(true)
+          }
         } catch (error) {
           console.error('Error parsing plan data:', error)
           router.push('/dashboard/create')
@@ -217,6 +230,15 @@ export default function ResultPage() {
     const typeNextChar = () => {
       if (itemIndex >= planItems.length) {
         setIsTypingComplete(true)
+        // Сбрасываем флаг после завершения анимации
+        setIsFirstGeneration(false)
+        // Обновляем данные в localStorage без флага анимации
+        const updatedPlan = {
+          ...planData,
+          isFirstGeneration: false
+        }
+        localStorage.setItem('studai-generated-plan', JSON.stringify(updatedPlan))
+        setGeneratedPlan(updatedPlan)
         return
       }
       

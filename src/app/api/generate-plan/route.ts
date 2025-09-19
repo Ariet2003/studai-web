@@ -280,6 +280,7 @@ Answer ONLY in JSON format:
     const result = {
       ...parsedResponse,
       plan: convertPlanToNewFormat(parsedResponse.plan),
+      isFirstGeneration: true, // Флаг для анимации печати
       metadata: {
         workType,
         workLanguage,
