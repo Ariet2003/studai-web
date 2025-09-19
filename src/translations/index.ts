@@ -594,6 +594,11 @@ export interface Translations {
       regenerate: string
       regenerating: string
       createWork: string
+      edit: string
+      addAfter: string
+      delete: string
+      menuTitle: string
+      cancel: string
     }
     workTypeNames: {
       essay: string
@@ -1200,7 +1205,12 @@ const russianTranslations: Translations = {
     actions: {
       regenerate: 'Перегенерировать',
       regenerating: 'Перегенерация...',
-      createWork: 'Создать работу'
+      createWork: 'Создать работу',
+      edit: 'Редактировать',
+      addAfter: 'Добавить после',
+      delete: 'Удалить',
+      menuTitle: 'Действия',
+      cancel: 'Отмена'
     },
     workTypeNames: {
       essay: 'Реферат',
@@ -1805,7 +1815,12 @@ const kyrgyzTranslations: Translations = {
     actions: {
       regenerate: 'Кайра генерациялоо',
       regenerating: 'Кайра генерацияланууда...',
-      createWork: 'Жумуш түзүү'
+      createWork: 'Жумуш түзүү',
+      edit: 'Өзгөртүү',
+      addAfter: 'Кийинки кошуу',
+      delete: 'Өчүрүү',
+      menuTitle: 'Аракеттер',
+      cancel: 'Жокко чыгаруу'
     },
     workTypeNames: {
       essay: 'Реферат',
@@ -2410,7 +2425,12 @@ const englishTranslations: Translations = {
     actions: {
       regenerate: 'Regenerate',
       regenerating: 'Regenerating...',
-      createWork: 'Create Work'
+      createWork: 'Create Work',
+      edit: 'Edit',
+      addAfter: 'Add After',
+      delete: 'Delete',
+      menuTitle: 'Actions',
+      cancel: 'Cancel'
     },
     workTypeNames: {
       essay: 'Essay',

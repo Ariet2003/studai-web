@@ -24,9 +24,14 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { getTranslation } from '@/translations'
 import LanguageSelector from '@/components/LanguageSelector'
 
+interface PlanItem {
+  text: string
+  type: 'chapter' | 'subsection'
+}
+
 interface GeneratedPlan {
   title: string
-  plan: string[]
+  plan: PlanItem[]
   metadata: {
     workType: string
     workLanguage: string
@@ -54,19 +59,34 @@ export default function ResultPage() {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedPlan | null>(null)
   const [isRegenerating, setIsRegenerating] = useState(false)
-  const [typedItems, setTypedItems] = useState<string[]>([])
+  const [typedItems, setTypedItems] = useState<PlanItem[]>([])
   const [currentItemIndex, setCurrentItemIndex] = useState(0)
   const [currentItemText, setCurrentItemText] = useState('')
   const [isTypingComplete, setIsTypingComplete] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editingText, setEditingText] = useState('')
-  const [editablePlan, setEditablePlan] = useState<string[]>([])
+  const [editablePlan, setEditablePlan] = useState<PlanItem[]>([])
   const [isMobile, setIsMobile] = useState(false)
   const [showAddDropdown, setShowAddDropdown] = useState<number | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteModalIndex, setDeleteModalIndex] = useState<number | null>(null)
   const [mobileMenuIndex, setMobileMenuIndex] = useState<number | null>(null)
+  const [showMobileMenuModal, setShowMobileMenuModal] = useState(false)
+  const [showMobileAddModal, setShowMobileAddModal] = useState(false)
+  const [mobileAddIndex, setMobileAddIndex] = useState<number | null>(null)
   const [newItemIndex, setNewItemIndex] = useState<number | null>(null)
+
+  // Функция для синхронизации данных с localStorage
+  const syncWithLocalStorage = (updatedPlan: PlanItem[]) => {
+    if (generatedPlan) {
+      const updatedGeneratedPlan = {
+        ...generatedPlan,
+        plan: updatedPlan
+      }
+      localStorage.setItem('studai-generated-plan', JSON.stringify(updatedGeneratedPlan))
+      setGeneratedPlan(updatedGeneratedPlan)
+    }
+  }
 
   // Функции для работы с темой
   const getThemeCookie = (): boolean => {
@@ -119,6 +139,21 @@ export default function ResultPage() {
       if (savedPlan) {
         try {
           const planData = JSON.parse(savedPlan)
+          
+          // Конвертируем старый формат в новый, если необходимо
+          if (planData.plan && Array.isArray(planData.plan) && planData.plan.length > 0) {
+            if (typeof planData.plan[0] === 'string') {
+              // Старый формат - конвертируем в новый
+              planData.plan = planData.plan.map((item: string) => {
+                const isChapter = item.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.|Новая глава)/)
+                return {
+                  text: item,
+                  type: isChapter ? 'chapter' : 'subsection'
+                }
+              })
+            }
+          }
+          
           setGeneratedPlan(planData)
           
           // Запускаем эффект печатания
@@ -171,8 +206,11 @@ export default function ResultPage() {
     let charIndex = 0
     let animationId: NodeJS.Timeout
     
-    // Инициализируем массив с пустыми строками
-    const initialItems = new Array(planItems.length).fill('')
+    // Инициализируем массив с пустыми объектами
+    const initialItems = new Array(planItems.length).fill(null).map((_, index) => ({
+      text: '',
+      type: planItems[index].type
+    }))
     setTypedItems(initialItems)
     setCurrentItemIndex(0)
     
@@ -184,14 +222,17 @@ export default function ResultPage() {
       
       const currentItem = planItems[itemIndex]
       
-      if (charIndex < currentItem.length) {
+      if (charIndex < currentItem.text.length) {
         // Печатаем следующий символ, обновляя элемент в массиве
         charIndex++
-        const partialText = currentItem.slice(0, charIndex)
+        const partialText = currentItem.text.slice(0, charIndex)
         
         setTypedItems(prev => {
           const newItems = [...prev]
-          newItems[itemIndex] = partialText
+          newItems[itemIndex] = {
+            text: partialText,
+            type: currentItem.type
+          }
           return newItems
         })
         
@@ -207,7 +248,7 @@ export default function ResultPage() {
         }, 100)
         
         // Скорость печатания
-        const delay = currentItem[charIndex - 1] === ' ' ? 10 : 15
+        const delay = currentItem.text[charIndex - 1] === ' ' ? 10 : 15
         animationId = setTimeout(typeNextChar, delay)
       } else {
         // Завершили текущий элемент, переходим к следующему
@@ -259,7 +300,8 @@ export default function ResultPage() {
   // Функции для редактирования плана
   const handleEditItem = (index: number) => {
     setEditingIndex(index)
-    setEditingText(editablePlan[index] || typedItems[index])
+    const currentItem = editablePlan[index] || typedItems[index]
+    setEditingText(currentItem?.text || '')
   }
 
   const handleSaveItem = () => {
@@ -269,13 +311,22 @@ export default function ResultPage() {
         // Если editablePlan пуст, копируем из typedItems
         updatedPlan.push(...typedItems)
       }
-      updatedPlan[editingIndex] = editingText
+      updatedPlan[editingIndex] = {
+        text: editingText,
+        type: updatedPlan[editingIndex]?.type || 'subsection'
+      }
       setEditablePlan(updatedPlan)
       
       // Обновляем также typedItems для отображения
       const updatedTypedItems = [...typedItems]
-      updatedTypedItems[editingIndex] = editingText
+      updatedTypedItems[editingIndex] = {
+        text: editingText,
+        type: updatedTypedItems[editingIndex]?.type || 'subsection'
+      }
       setTypedItems(updatedTypedItems)
+      
+      // Синхронизируем с localStorage
+      syncWithLocalStorage(updatedPlan)
       
       // Сбрасываем состояние нового элемента
       setNewItemIndex(null)
@@ -296,6 +347,9 @@ export default function ResultPage() {
       updatedTypedItems.splice(newItemIndex, 1)
       setTypedItems(updatedTypedItems)
       
+      // Синхронизируем с localStorage
+      syncWithLocalStorage(updatedPlan)
+      
       setNewItemIndex(null)
     }
     
@@ -313,6 +367,9 @@ export default function ResultPage() {
     updatedTypedItems.splice(index, 1)
     setTypedItems(updatedTypedItems)
     
+    // Синхронизируем с localStorage
+    syncWithLocalStorage(updatedPlan)
+    
     // Сбрасываем редактирование если удаляем редактируемый элемент
     if (editingIndex === index) {
       setEditingIndex(null)
@@ -322,9 +379,14 @@ export default function ResultPage() {
     }
   }
 
-  // Открытие выпадающего списка добавления
+  // Открытие выпадающего списка добавления (десктоп) или модального окна (мобайл)
   const handleOpenAddDropdown = (afterIndex: number) => {
-    setShowAddDropdown(showAddDropdown === afterIndex ? null : afterIndex)
+    if (isMobile) {
+      setMobileAddIndex(afterIndex)
+      setShowMobileAddModal(true)
+    } else {
+      setShowAddDropdown(showAddDropdown === afterIndex ? null : afterIndex)
+    }
     setMobileMenuIndex(null) // Закрываем мобильное меню
   }
 
@@ -366,12 +428,15 @@ export default function ResultPage() {
   const handleAddItem = (afterIndex: number, isChapter: boolean) => {
     const currentPlan = editablePlan.length > 0 ? editablePlan : typedItems
     
-    const newItem = isChapter ? 'Новая глава' : 'Новый подраздел'
+    const newItem: PlanItem = {
+      text: isChapter ? 'Новая глава' : 'Новый подраздел',
+      type: isChapter ? 'chapter' : 'subsection'
+    }
     
     // Определяем правильную позицию для вставки
     let insertIndex = afterIndex + 1
     if (isChapter) {
-      insertIndex = findChapterInsertPosition(afterIndex, currentPlan)
+      insertIndex = findChapterInsertPosition(afterIndex, currentPlan.map(item => item.text))
     }
     
     const updatedPlan = [...currentPlan]
@@ -383,13 +448,18 @@ export default function ResultPage() {
     updatedTypedItems.splice(insertIndex, 0, newItem)
     setTypedItems(updatedTypedItems)
     
-    // Закрываем выпадающий список
+    // Синхронизируем с localStorage
+    syncWithLocalStorage(updatedPlan)
+    
+    // Закрываем выпадающий список или мобильное модальное окно
     setShowAddDropdown(null)
+    setShowMobileAddModal(false)
+    setMobileAddIndex(null)
     
     // Помечаем как новый элемент и начинаем редактирование
     setNewItemIndex(insertIndex)
     setEditingIndex(insertIndex)
-    setEditingText(newItem)
+    setEditingText(newItem.text)
   }
 
   // Открытие модального окна удаления
@@ -607,7 +677,7 @@ export default function ResultPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`rounded-2xl p-6 mb-6 backdrop-blur-xl border ${
+              className={`rounded-2xl p-4 mb-6 backdrop-blur-xl border ${
                 isDarkMode 
                   ? 'bg-[#181f38]/60 border-[#181f38]/40' 
                   : 'bg-white/60 border-white/60'
@@ -634,18 +704,18 @@ export default function ResultPage() {
                 <div className="space-y-2">
                   {typedItems.map((item, index) => {
                     // Показываем только непустые элементы
-                    if (!item) return null
+                    if (!item || !item.text) return null
                     
                     // Определяем является ли элемент главой или разделом
-                    const isChapter = item.match(/^(Введение|Заключение|Список литературы|References|Conclusion|Introduction|Глава \d+\.|Chapter \d+\.|Киришүү|Жыйынтык|Корутунду|Адабияттар тизмеси|Колдонулган адабияттардын тизмеси|\d+-глава\.|\d+-Бөлүм\.|Новая глава)/)
-                    const isSubsection = !isChapter || item === 'Новый подраздел'
+                    const isChapter = item.type === 'chapter'
+                    const isSubsection = item.type === 'subsection'
                     const isCurrentItem = index === currentItemIndex && !isTypingComplete
                     
                     return (
                       <div
                         key={`item-${index}`}
                         data-plan-item={index}
-                        className={`group relative p-3 rounded-lg transition-all duration-200 ${
+                        className={`group relative p-2 md:p-3 rounded-lg transition-all duration-200 ${
                           isDarkMode 
                             ? 'bg-[#0f172a]/40 hover:bg-[#0f172a]/60' 
                             : 'bg-slate-50/50 hover:bg-slate-100/70'
@@ -698,7 +768,7 @@ export default function ResultPage() {
                           // Режим просмотра
                           <div className="flex items-center justify-between">
                             <span className="flex-1">
-                              {item}
+                              {item.text}
                               {isCurrentItem && (
                                 <span className="animate-pulse ml-1 text-blue-500 font-mono">|</span>
                               )}
@@ -793,7 +863,10 @@ export default function ResultPage() {
                                 {isMobile && (
                                   <div className="relative mobile-menu-container">
                                     <button
-                                      onClick={() => setMobileMenuIndex(mobileMenuIndex === index ? null : index)}
+                                      onClick={() => {
+                                        setMobileMenuIndex(index)
+                                        setShowMobileMenuModal(true)
+                                      }}
                                       className={`p-2 rounded transition-colors ${
                                         isDarkMode 
                                           ? 'hover:bg-slate-600/20 text-slate-400' 
@@ -802,59 +875,6 @@ export default function ResultPage() {
                                     >
                                       <MoreVertical className="w-4 h-4" />
                                     </button>
-                                    
-                                    {/* Мобильное меню */}
-                                    <AnimatePresence>
-                                      {mobileMenuIndex === index && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.95 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          exit={{ opacity: 0, scale: 0.95 }}
-                                          className={`absolute right-0 top-full mt-2 py-2 rounded-lg shadow-lg border z-10 ${
-                                            isDarkMode 
-                                              ? 'bg-[#2d3748] border-[#4a5568]' 
-                                              : 'bg-white border-slate-200'
-                                          }`}
-                                        >
-                                          <button
-                                            onClick={() => {
-                                              handleEditItem(index)
-                                              setMobileMenuIndex(null)
-                                            }}
-                                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ${
-                                              isDarkMode 
-                                                ? 'hover:bg-blue-600/20 text-blue-400' 
-                                                : 'hover:bg-blue-100 text-blue-600'
-                                            }`}
-                                          >
-                                            <Edit2 className="w-4 h-4" />
-                                            Редактировать
-                                          </button>
-                                          <button
-                                            onClick={() => handleOpenAddDropdown(index)}
-                                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ${
-                                              isDarkMode 
-                                                ? 'hover:bg-green-600/20 text-green-400' 
-                                                : 'hover:bg-green-100 text-green-600'
-                                            }`}
-                                          >
-                                            <Plus className="w-4 h-4" />
-                                            Добавить после
-                                          </button>
-                                          <button
-                                            onClick={() => handleOpenDeleteModal(index)}
-                                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ${
-                                              isDarkMode 
-                                                ? 'hover:bg-red-600/20 text-red-400' 
-                                                : 'hover:bg-red-100 text-red-600'
-                                            }`}
-                                          >
-                                            <Trash2 className="w-4 h-4" />
-                                            Удалить
-                                          </button>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
                                   </div>
                                 )}
                               </div>
@@ -952,7 +972,7 @@ export default function ResultPage() {
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
                 >
-                  Отмена
+  {t.result.actions.cancel}
                 </button>
                 <button
                   onClick={handleConfirmDelete}
@@ -961,6 +981,181 @@ export default function ResultPage() {
                   Удалить
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Мобильное модальное окно добавления */}
+      <AnimatePresence>
+        {showMobileAddModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowMobileAddModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`rounded-2xl p-6 max-w-sm w-full ${
+                isDarkMode ? 'bg-[#181f38]' : 'bg-white'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                Добавить элемент
+              </h3>
+              <p className={`text-sm mb-6 ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
+                Выберите тип элемента для добавления:
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => mobileAddIndex !== null && handleAddItem(mobileAddIndex, true)}
+                  className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${
+                    isDarkMode 
+                      ? 'border-blue-400/30 hover:border-blue-400/50 hover:bg-blue-400/10' 
+                      : 'border-blue-200 hover:border-blue-300 hover:bg-blue-50'
+                  }`}
+                >
+                  <div className={`w-3 h-3 rounded-full ${isDarkMode ? 'bg-blue-400' : 'bg-blue-600'}`}></div>
+                  <div className="text-left">
+                    <div className={`font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                      Добавить главу
+                    </div>
+                    <div className={`text-sm ${isDarkMode ? 'text-[#78819d]' : 'text-slate-500'}`}>
+                      Основной раздел работы
+                    </div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => mobileAddIndex !== null && handleAddItem(mobileAddIndex, false)}
+                  className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${
+                    isDarkMode 
+                      ? 'border-slate-600 hover:border-slate-500 hover:bg-slate-700/30' 
+                      : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className={`w-3 h-3 rounded-full ${isDarkMode ? 'bg-white' : 'bg-slate-700'}`}></div>
+                  <div className="text-left">
+                    <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-700'}`}>
+                      Добавить подтему
+                    </div>
+                    <div className={`text-sm ${isDarkMode ? 'text-[#78819d]' : 'text-slate-500'}`}>
+                      Подраздел главы
+                    </div>
+                  </div>
+                </button>
+              </div>
+              
+              <button
+                onClick={() => setShowMobileAddModal(false)}
+                className={`w-full mt-4 px-4 py-2 rounded-lg transition-colors ${
+                  isDarkMode 
+                    ? 'bg-slate-700 hover:bg-slate-600 text-white' 
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+{t.result.actions.cancel}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Мобильное модальное окно для меню с тремя точками */}
+      <AnimatePresence>
+        {showMobileMenuModal && mobileMenuIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => {
+              setShowMobileMenuModal(false)
+              setMobileMenuIndex(null)
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`rounded-2xl p-6 w-full max-w-xs ${
+                isDarkMode ? 'bg-[#181f38]' : 'bg-white'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className={`text-lg font-bold mb-4 text-center ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                {t.result.actions.menuTitle}
+              </h3>
+              
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    handleEditItem(mobileMenuIndex)
+                    setShowMobileMenuModal(false)
+                    setMobileMenuIndex(null)
+                  }}
+                  className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-blue-600/20 text-blue-400 border border-blue-400/30' 
+                      : 'hover:bg-blue-100 text-blue-600 border border-blue-200'
+                  }`}
+                >
+                  <Edit2 className="w-5 h-5" />
+                  <span className="font-medium">{t.result.actions.edit}</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleOpenAddDropdown(mobileMenuIndex)
+                    setShowMobileMenuModal(false)
+                    setMobileMenuIndex(null)
+                  }}
+                  className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-green-600/20 text-green-400 border border-green-400/30' 
+                      : 'hover:bg-green-100 text-green-600 border border-green-200'
+                  }`}
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="font-medium">{t.result.actions.addAfter}</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleOpenDeleteModal(mobileMenuIndex)
+                    setShowMobileMenuModal(false)
+                    setMobileMenuIndex(null)
+                  }}
+                  className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-red-600/20 text-red-400 border border-red-400/30' 
+                      : 'hover:bg-red-100 text-red-600 border border-red-200'
+                  }`}
+                >
+                  <Trash2 className="w-5 h-5" />
+                  <span className="font-medium">{t.result.actions.delete}</span>
+                </button>
+              </div>
+              
+              <button
+                onClick={() => {
+                  setShowMobileMenuModal(false)
+                  setMobileMenuIndex(null)
+                }}
+                className={`w-full mt-4 px-4 py-2 rounded-lg transition-colors ${
+                  isDarkMode 
+                    ? 'bg-slate-700 hover:bg-slate-600 text-white' 
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+{t.result.actions.cancel}
+              </button>
             </motion.div>
           </motion.div>
         )}
