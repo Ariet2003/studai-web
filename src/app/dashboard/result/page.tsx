@@ -43,6 +43,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getTranslation } from '@/translations'
 import LanguageSelector from '@/components/LanguageSelector'
+import AIOrb from '@/components/ui/AIOrb'
 
 interface PlanItem {
   text: string
@@ -390,6 +391,9 @@ export default function ResultPage() {
   const [mobileAddIndex, setMobileAddIndex] = useState<number | null>(null)
   const [newItemIndex, setNewItemIndex] = useState<number | null>(null)
   const [isFirstGeneration, setIsFirstGeneration] = useState(false)
+  const [showRegenerateModal, setShowRegenerateModal] = useState(false)
+  const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false)
+  const [regenerateError, setRegenerateError] = useState<string | null>(null)
 
   // Сенсоры для перетаскивания
   const sensors = useSensors(
@@ -706,10 +710,75 @@ export default function ResultPage() {
     router.push('/dashboard/create')
   }
 
-  const handleRegenerate = async () => {
-    // Перенаправляем на страницу создания для новой генерации
-    localStorage.removeItem('studai-generated-plan')
-    router.push('/dashboard/create')
+  const handleRegenerate = () => {
+    if (!generatedPlan) return
+    setShowRegenerateConfirm(true)
+  }
+
+  const handleConfirmRegenerate = async () => {
+    if (!generatedPlan) return
+    
+    setShowRegenerateConfirm(false)
+    setShowRegenerateModal(true)
+    setIsRegenerating(true)
+    setRegenerateError(null)
+    
+    try {
+      // Используем данные из текущего плана для регенерации
+      const response = await fetch('/api/generate-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...generatedPlan.metadata,
+          uiLanguage: language
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to regenerate plan')
+      }
+
+      const result = await response.json()
+      
+      // Добавляем флаг для запуска анимации печати
+      result.isFirstGeneration = true
+      
+      // Сохраняем новый результат в localStorage
+      localStorage.setItem('studai-generated-plan', JSON.stringify(result))
+      
+      // Сбрасываем состояние для новой анимации печати
+      setTypedItems([])
+      setCurrentItemIndex(0)
+      setCurrentItemText('')
+      setIsTypingComplete(false)
+      setEditablePlan([])
+      
+      // Скрываем модальное окно
+      setShowRegenerateModal(false)
+      
+      // Обновляем план с новыми данными и запускаем анимацию
+      setGeneratedPlan(result)
+      setIsFirstGeneration(true)
+      
+      // Запускаем эффект печатания
+      setTimeout(() => {
+        startTypingEffect(result)
+      }, 500)
+      
+    } catch (error) {
+      console.error('Error regenerating plan:', error)
+      setRegenerateError('Произошла ошибка при генерации плана. Попробуйте еще раз.')
+      setShowRegenerateModal(false)
+      
+      // Автоматически скрываем ошибку через 5 секунд
+      setTimeout(() => {
+        setRegenerateError(null)
+      }, 5000)
+    } finally {
+      setIsRegenerating(false)
+    }
   }
 
   const handleCreateWork = () => {
@@ -1448,6 +1517,133 @@ export default function ResultPage() {
               >
 {t.result.actions.cancel}
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Предупреждающее модальное окно регенерации */}
+      <AnimatePresence>
+        {showRegenerateConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowRegenerateConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`rounded-2xl p-6 max-w-md w-full ${
+                isDarkMode ? 'bg-[#181f38]' : 'bg-white'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`p-2 rounded-full ${isDarkMode ? 'bg-orange-900/40' : 'bg-orange-100'}`}>
+                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                  {t.result.regenerateConfirm.title}
+                </h3>
+              </div>
+              
+              <p className={`text-sm mb-2 ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
+                {t.result.regenerateConfirm.warning}
+              </p>
+              
+              <p className={`text-sm mb-6 font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
+                {t.result.regenerateConfirm.message}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => setShowRegenerateConfirm(false)}
+                  className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
+                    isDarkMode 
+                      ? 'bg-slate-700 hover:bg-slate-600 text-white' 
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {t.result.regenerateConfirm.cancel}
+                </button>
+                <button
+                  onClick={handleConfirmRegenerate}
+                  className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                >
+                  {t.result.regenerateConfirm.confirm}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Модальное окно регенерации */}
+      <AnimatePresence>
+        {showRegenerateModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className={`p-8 rounded-3xl max-w-lg mx-4 text-center ${
+                isDarkMode ? 'bg-[#181f38]' : 'bg-white'
+              }`}
+            >
+              <div className="flex flex-col items-center">
+                <div className="mb-4">
+                  <AIOrb size={isMobile ? 120 : 200} />
+                </div>
+                <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                  {t.workGenerator.generating.title}
+                </h3>
+                <p className={`text-sm md:text-base ${isDarkMode ? 'text-[#78819d]' : 'text-slate-600'}`}>
+                  {t.workGenerator.generating.subtitle}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Ошибка регенерации */}
+      <AnimatePresence>
+        {regenerateError && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
+          >
+            <motion.div
+              className={`p-4 rounded-lg shadow-lg max-w-sm mx-4 ${
+                isDarkMode ? 'bg-red-900/80 border border-red-600' : 'bg-red-100 border border-red-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <AlertTriangle className={`w-5 h-5 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`} />
+                <div>
+                  <p className={`text-sm font-medium ${isDarkMode ? 'text-red-200' : 'text-red-800'}`}>
+                    {regenerateError}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setRegenerateError(null)}
+                  className={`p-1 rounded transition-colors ${
+                    isDarkMode ? 'hover:bg-red-800 text-red-400' : 'hover:bg-red-200 text-red-600'
+                  }`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

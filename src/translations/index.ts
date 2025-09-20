@@ -600,6 +600,13 @@ export interface Translations {
       menuTitle: string
       cancel: string
     }
+    regenerateConfirm: {
+      title: string
+      message: string
+      warning: string
+      confirm: string
+      cancel: string
+    }
     workTypeNames: {
       essay: string
       coursework: string
@@ -1212,6 +1219,13 @@ const russianTranslations: Translations = {
       menuTitle: 'Действия',
       cancel: 'Отмена'
     },
+    regenerateConfirm: {
+      title: 'Перегенерировать план?',
+      message: 'Вы уверены, что хотите создать новый план?',
+      warning: 'Текущий план будет заменен новым. Все ваши изменения будут потеряны.',
+      confirm: 'Продолжить',
+      cancel: 'Отмена'
+    },
     workTypeNames: {
       essay: 'Реферат',
       coursework: 'Курсовая работа',
@@ -1820,7 +1834,14 @@ const kyrgyzTranslations: Translations = {
       addAfter: 'Кийинки кошуу',
       delete: 'Өчүрүү',
       menuTitle: 'Аракеттер',
-      cancel: 'Жокко чыгаруу'
+      cancel: 'Артка'
+    },
+    regenerateConfirm: {
+      title: 'Планды кайра генерациялоого?',
+      message: 'Жаңы план түзүүнү каалайсызбы?',
+      warning: 'Учурдагы план жаңысы менен алмаштырылат. Бардык өзгөртүүлөрүңүз жоголот.',
+      confirm: 'Улантуу',
+      cancel: 'Артка'
     },
     workTypeNames: {
       essay: 'Реферат',
@@ -2430,6 +2451,13 @@ const englishTranslations: Translations = {
       addAfter: 'Add After',
       delete: 'Delete',
       menuTitle: 'Actions',
+      cancel: 'Cancel'
+    },
+    regenerateConfirm: {
+      title: 'Regenerate plan?',
+      message: 'Are you sure you want to create a new plan?',
+      warning: 'Current plan will be replaced with a new one. All your changes will be lost.',
+      confirm: 'Continue',
       cancel: 'Cancel'
     },
     workTypeNames: {
