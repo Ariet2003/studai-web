@@ -27,6 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
+      <head>
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.7.0/uicons-solid-straight/css/uicons-solid-straight.css" />
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.7.0/uicons-regular-rounded/css/uicons-regular-rounded.css" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
